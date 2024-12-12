@@ -1,11 +1,11 @@
 import express, {Express, Request, Response} from 'express';
+import { PORT } from './secrets';
+import rootRouter from './routes';
 
 const app:Express = express();
 
-app.get('/', (req:Request, res:Response) => {
-    res.send("I WANT TO DO YOUR BACKEND");
-})
+app.use('/api', rootRouter)
 
-app.listen(8088, () => {
+app.listen(PORT, () => {
     console.log("Listening on port 8088");
 })
