@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import FormContainer from '../../components/FormContainer';
 import FormInput from '../../components/FormInput';
 import Button from '../../components/Button';
@@ -7,16 +10,32 @@ import Button from '../../components/Button';
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // Simulate login logic
-      alert('Login successful!');
-      window.location.href = '/';
+      const response = await axios.post('http://localhost:8088/api/auth/login', {
+        email,
+        password
+      });
+
+      // Save token and user info to localStorage
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+
+      toast.success('Login successful!', {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+
+      // Redirect to home page
+      navigate('/');
     } catch (err) {
-      setError('Invalid email or password');
+      toast.error(err.response?.data?.message || 'Login failed', {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
     }
   };
 
@@ -49,14 +68,14 @@ const LoginForm = () => {
           </Link>
         </div>
         <Button label="Login" type="submit" />
-        {error && <p className="text-red-500 mt-2">{error}</p>}
         <div className="text-center mt-4">
-          <span>Don’t have an account? </span>
+          <span>Dont have an account? </span>
           <Link to="/signup" className="text-blue-500">
             Sign Up
           </Link>
         </div>
       </form>
+      <ToastContainer />
     </FormContainer>
   );
 };
