@@ -17,8 +17,8 @@ const FormInput = ({ type, name, placeholder, value, onChange, icon }) => {
 
   return (
     <div className="mb-4">
-      <label htmlFor={name} className="block text-sm font-medium mb-2 text-gray-700">
-        {placeholder}
+      <label htmlFor={name} className="block text-base font-semibold mb-2">
+        {name}
       </label>
       <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2">
         <IconComponent />
