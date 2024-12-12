@@ -1,7 +1,9 @@
+import CarbonaraImage from "../../assets/Carbonara.png";
+
 const AboutContent = () => (
     <section className="py-12 px-6 lg:px-16 flex flex-col lg:flex-row items-center space-y-8 lg:space-y-0 lg:space-x-12">
       <img
-        src="path-to-image.jpg"
+        src={CarbonaraImage}
         alt="Delicious Dish"
         className="w-full lg:w-1/2 rounded-lg shadow-lg"
       />
@@ -18,7 +20,7 @@ const AboutContent = () => (
         </p>
       </div>
     </section>
-  );
-  
-  export default AboutContent;
+);
+
+export default AboutContent;
   
