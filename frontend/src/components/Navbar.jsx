@@ -1,13 +1,29 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check for user in localStorage on component mount
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   const handleLogout = () => {
+    // Remove user data from localStorage
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    
+    // Update user state
     setUser(null);
+    
+    // Show logout toast
     toast.success("Logout successful!", {
       position: "bottom-right",
       autoClose: 3000,
@@ -16,6 +32,9 @@ const Navbar = () => {
       pauseOnHover: true,
       draggable: true,
     });
+
+    // Redirect to home page
+    navigate('/');
   };
 
   const getFirstName = (name) => {
