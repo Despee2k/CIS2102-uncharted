@@ -2,7 +2,7 @@
 
 import ContactUsSection from "../features/ContactUsSection";
 import Navbar from "../components/Navbar";
-import JoinUsCTA from "../components/ContactUs/JoinUsCTA";
+import JoinUsCTA from "../components/JoinUsCTA";
 import Footer from "../components/Footer";
 import Steak from "../assets/Steak.png";
 
