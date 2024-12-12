@@ -1,11 +1,11 @@
-import express from 'express';
+import express, {Express, Request, Response} from 'express';
 
-const app = express();
+const app:Express = express();
 
-app.get('/', (req, res) => {
-    res.send('I WANT TO DO YOUR BACKEND');
+app.get('/', (req:Request, res:Response) => {
+    res.send("I WANT TO DO YOUR BACKEND");
 })
 
 app.listen(8088, () => {
-    console.log("Listening on port 8088!");
+    console.log("Listening on port 8088");
 })
