@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { prismaClient } from "..";
 import { hashSync, compareSync } from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
@@ -9,7 +9,7 @@ import { UnprocessableEntity } from "../exceptions/validation";
 import { SignUpSchema } from "../schema/users";
 import { NotFoundException } from "../exceptions/not-found";
 
-export const signup = async (req:Request, res:Response, next: NextFunction) => {
+export const signup = async (req:Request, res:Response) => {
     SignUpSchema.parse(req.body)
     const {name, email, password} = req.body;
 
@@ -27,7 +27,7 @@ export const signup = async (req:Request, res:Response, next: NextFunction) => {
     res.json(user);
 }
 
-export const login = async (req:Request, res:Response, next: NextFunction) => {
+export const login = async (req:Request, res:Response) => {
     const {email, password} = req.body;
 
     let user = await prismaClient.user.findFirst({where: {email: email}})
@@ -42,4 +42,9 @@ export const login = async (req:Request, res:Response, next: NextFunction) => {
     }, JWT_SECRET)
 
     res.json({user, token});
+}
+
+// /me -> return the logged in user
+export const me = async (req: Request, res: Response) => {
+    res.json(req.user);
 }
