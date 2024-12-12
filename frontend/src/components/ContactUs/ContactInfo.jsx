@@ -4,7 +4,7 @@ const ContactInfo = () => {
     return (
         <div className="space-y-10 text-center lg:text-left">
             <p className="ml-8">
-                Have a question, suggestion, or collaboration idea? At Uncharted Creative, we’re always excited to connect with fellow explorers of culinary creativity. Whether you’re looking for recipe tips, want to share your cooking story, or have feedback for us, we’d love to hear from you!
+                Have a question, suggestion, or collaboration idea? At Uncharted Creative, we are always excited to connect with fellow explorers of culinary creativity. Whether you’re looking for recipe tips, want to share your cooking story, or have feedback for us, we’d love to hear from you!
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-5">
                 <div className="flex flex-col items-center">
