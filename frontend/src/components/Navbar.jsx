@@ -1,28 +1,65 @@
-import { Link } from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
-
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Navbar = () => {
+  const [user, setUser] = useState(null);
+
+  const handleLogout = () => {
+    setUser(null);
+    toast.success("Logout successful!", {
+      position: "bottom-right",
+      autoClose: 3000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+  };
+
+  const getFirstName = (name) => {
+    if (name) {
+      const names = name.split(" ");
+      return names[0]; // Return the first name
+    }
+    return "User";
+  };
+
   return (
     <>
       <header className="header p-4 bg-[#FAF7F0] shadow-lg">
         <div className="container mx-auto flex justify-between items-center">
           {/* Logo */}
-
           <div className="flex items-center">
-            <img src="../../src/assets/Logo1.png" alt="Logo" className="h-12 w-12 mr-4" />
-            <span className="text-2xl font-semibold text-black font-heading">Uncharted <span className="text-accent">Creatives</span></span>
+            <img
+              src="../../src/assets/Logo1.png"
+              alt="Logo"
+              className="h-12 w-12 mr-4"
+            />
+            <span className="text-2xl font-semibold text-black font-heading">
+              Uncharted <span className="text-accent">Creatives</span>
+            </span>
           </div>
 
           {/* Navbar Links */}
           <nav className="flex items-center space-x-6">
-            <Link to="/" className="text-lg font-medium text-black hover:text-accent transition duration-300">
+            <Link
+              to="/"
+              className="text-lg font-medium text-black hover:text-accent transition duration-300"
+            >
               Menu
             </Link>
-            <Link to="/about" className="text-lg font-medium text-black hover:text-accent transition duration-300">
+            <Link
+              to="/about"
+              className="text-lg font-medium text-black hover:text-accent transition duration-300"
+            >
               About Us
             </Link>
-            <Link to="/contact" className="text-lg font-medium text-black hover:text-accent transition duration-300">
+            <Link
+              to="/contact"
+              className="text-lg font-medium text-black hover:text-accent transition duration-300"
+            >
               Contact Us
             </Link>
           </nav>
@@ -39,21 +76,38 @@ const Navbar = () => {
 
           {/* Login and Sign-Up Buttons */}
           <div className="flex items-center space-x-4">
-            <Link
-              to="/login"
-              className="text-lg font-medium text-black hover:text-accent transition duration-300"
-            >
-              Log in
-            </Link>
-            <Link
-              to="/signup"
-              className="px-4 py-2 bg-accent text-white rounded-md hover:bg-opacity-90 transition duration-300"
-            >
-              Sign up
-            </Link>
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-lg font-medium text-gray-700">
+                  Hello, {getFirstName(user.name || user.email)}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 bg-accent text-white rounded-md hover:bg-opacity-90 transition duration-300"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="text-lg font-medium text-black hover:text-accent transition duration-300"
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/signup"
+                  className="px-4 py-2 bg-accent text-white rounded-md hover:bg-opacity-90 transition duration-300"
+                >
+                  Sign up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
+      <ToastContainer />
     </>
   );
 };
