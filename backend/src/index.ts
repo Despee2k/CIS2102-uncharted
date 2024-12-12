@@ -4,8 +4,11 @@ import rootRouter from './routes';
 import { PrismaClient } from '@prisma/client';
 import { errorMiddleware } from './middlewares/errors';
 import { SignUpSchema } from './schema/users';
+import cors from 'cors';
 
 const app:Express = express();
+
+app.use(cors());
 
 app.use(express.json());
 
