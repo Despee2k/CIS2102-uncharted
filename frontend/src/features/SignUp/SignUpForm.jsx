@@ -1,31 +1,50 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import FormContainer from '../../components/FormContainer';
 import FormInput from '../../components/FormInput';
 import Button from '../../components/Button';
 
 const SignupForm = () => {
-  const [username, setUsername] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    
+    // Validate passwords match
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      toast.error('Passwords do not match', {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
       return;
     }
 
     try {
-      // Simulate signup logic
-      alert('Signup successful!');
-      window.location.href = '/';
+      await axios.post('http://localhost:8088/api/auth/signup', {
+        name,
+        email,
+        password
+      });
+
+      toast.success('Signup successful! Please log in.', {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+
+      // Redirect to login page
+      navigate('/login');
     } catch (err) {
-      setError('Signup failed');
+      toast.error(err.response?.data?.message || 'Signup failed', {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
     }
   };
 
@@ -33,33 +52,13 @@ const SignupForm = () => {
     <FormContainer title="Sign Up">
       <form onSubmit={handleSignup} className="signup-form">
         <FormInput
-          type="Username"
-          name="Username"
-          value={username}
-          placeholder="Enter your Username"
-          onChange={(e) => setUsername(e.target.value)}
+          type="text"
+          name="Name"
+          value={name}
+          placeholder="Enter your Full Name"
+          onChange={(e) => setName(e.target.value)}
           icon="person"
         />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormInput
-            type="FirstName"
-            name="First Name"
-            
-            value={firstName}
-            placeholder="First Name"
-            onChange={(e) => setFirstName(e.target.value)}
-            icon="person"
-          />
-          <FormInput
-            type="LastName"
-            name="Last Name"
-            value={lastName}
-            placeholder="Last Name"
-            onChange={(e) => setLastName(e.target.value)}
-            icon="person"
-          />
-        </div>
-
         <FormInput
           type="email"
           name="Email"
@@ -76,8 +75,15 @@ const SignupForm = () => {
           onChange={(e) => setPassword(e.target.value)}
           icon="password"
         />
+        <FormInput
+          type="password"
+          name="Confirm Password"
+          placeholder="Confirm your Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          icon="password"
+        />
         <Button label="Sign Up" type="submit" />
-        {error && <p className="text-red-500 mt-2">{error}</p>}
         <div className="text-center mt-4">
           <span>Already have an account? </span>
           <Link to="/login" className="text-blue-500">
@@ -85,6 +91,7 @@ const SignupForm = () => {
           </Link>
         </div>
       </form>
+      <ToastContainer />
     </FormContainer>
   );
 };
