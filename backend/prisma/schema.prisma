@@ -23,3 +23,37 @@ model User {
 
   @@map("users")
 }
+
+model Recipe {
+  id          Int      @id @default(autoincrement())
+  title       String
+  picture     String
+  description String
+  servings    Int
+  prepTime    Int
+  category    String
+  ingredients RecipeIngredient[]
+  procedure   RecipeProcedure[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("recipes")
+}
+
+model RecipeIngredient {
+  id         Int    @id @default(autoincrement())
+  recipeId   Int
+  ingredient String
+  recipe     Recipe @relation(fields: [recipeId], references: [id])
+
+  @@map("recipe_ingredients")
+}
+
+model RecipeProcedure {
+  id       Int    @id @default(autoincrement())
+  recipeId Int
+  step     String
+  recipe   Recipe @relation(fields: [recipeId], references: [id])
+
+  @@map("recipe_procedures")
+}
