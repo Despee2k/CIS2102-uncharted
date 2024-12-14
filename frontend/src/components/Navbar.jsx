@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaSearch } from "react-icons/fa";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
@@ -87,7 +88,7 @@ const Navbar = () => {
 
           {/* Search Bar */}
           <div className="flex items-center border border-accent rounded-md px-3 py-1 w-1/3">
-            <i className="fas fa-search text-accent mr-2"></i>
+            <FaSearch className="text-primary mr-2" />
             <input
               type="text"
               placeholder="Search"
