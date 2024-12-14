@@ -11,7 +11,7 @@ const AboutUsPage = () => {
             <Navbar />
 
             <div
-                    className="relative h-64 md:h-80 bg-cover bg-center"
+                    className="relative h-52 md:h-80 bg-cover bg-center"
                     style={{ backgroundImage: `url(${Pasta})` }}
                 >
                     <div className="absolute inset-0 bg-black opacity-50"></div>

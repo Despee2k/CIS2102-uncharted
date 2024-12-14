@@ -1,11 +1,12 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
+import SignupPage from './pages/SignUpPage';
 import ContactPage from './pages/ContactPage';
 import AboutUsPage from './pages/AboutUsPage';
 // import RecipePage from './pages/RecipePage';
 // import AddRecipePage from './pages/AddRecipePage';
+import SurveyPage from './pages/SurveyPage';
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/about" element={<AboutUsPage />} />
+        <Route path="/survey" element={<SurveyPage />} />
         {/* <Route path="/addrecipepage" element={<AddRecipePage />} /> */}
       </Routes>
     </Router>
