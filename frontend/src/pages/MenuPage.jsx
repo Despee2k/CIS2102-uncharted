@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Pagination from '../components/Pagination';
 import Navbar from '../components/Navbar';
 import CategoryFilter from '../components/CategoryFilter';
-import RecipeCard from '../components/Recipe/Recipe'
+import RecipeCard from '../components/Recipe/RecipeCard'
 
 
 const recipesData = [
