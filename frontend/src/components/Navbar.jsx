@@ -50,21 +50,23 @@ const Navbar = () => {
       <header className="header p-4 bg-[#FAF7F0] shadow-lg">
         <div className="container mx-auto flex justify-between items-center">
           {/* Logo */}
-          <div className="flex items-center">
-            <img
-              src="../../src/assets/Logo1.png"
-              alt="Logo"
-              className="h-12 w-12 mr-4"
-            />
-            <span className="text-2xl font-semibold text-black font-heading">
-              Uncharted <span className="text-accent">Creatives</span>
-            </span>
-          </div>
+          <Link to="/">
+            <div className="flex items-center">
+              <img
+                src="../../src/assets/Logo1.png"
+                alt="Logo"
+                className="h-12 w-12 mr-4"
+              />
+              <span className="text-2xl font-semibold text-black font-heading">
+                Uncharted <span className="text-accent">Creatives</span>
+              </span>
+            </div>
+          </Link>
 
           {/* Navbar Links */}
           <nav className="flex items-center space-x-6">
             <Link
-              to="/"
+              to="/menu"
               className="text-lg font-medium text-black hover:text-accent transition duration-300"
             >
               Menu
