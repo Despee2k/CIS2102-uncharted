@@ -1,29 +1,28 @@
 import PropTypes from 'prop-types';
 
-const SurveyQuestion = ({ question, options, selectedOption, setSelectedOption }) => {
+const SurveyQuestion = ({ options, selectedOption, setSelectedOption }) => {
   return (
-    <div className="mb-6">
-      <h2 className="text-xl font-semibold mb-4">{question}</h2>
-      <div className="flex flex-wrap gap-4">
-        {options.map((option, index) => (
-          <button
-            key={index}
-            className={`px-4 py-2 rounded border ${
-              selectedOption === option
-                ? 'bg-accent text-white'
-                : 'bg-gray-200 text-black'
-            }`}
-            onClick={() => setSelectedOption(option)}
-          >
-            {option}
-          </button>
-        ))}
-      </div>
+    <div className="flex flex-wrap justify-center items-center w-full max-w-[600px] mx-auto gap-x-8 gap-y-6 mt-12">
+      {options.map((option) => (
+        <button
+          key={option}
+          className={`w-[160px] h-[60px] flex items-center justify-center border rounded-lg text-lg font-medium shadow-md ${
+            selectedOption === option
+              ? 'bg-accent text-white'
+              : 'bg-white text-black'
+          }`}
+          onClick={() => setSelectedOption(option)}
+        >
+          {option}
+        </button>
+      ))}
     </div>
   );
 };
 
 export default SurveyQuestion;
+
+
 
 SurveyQuestion.propTypes = {
   question: PropTypes.string.isRequired,
@@ -31,3 +30,4 @@ SurveyQuestion.propTypes = {
   selectedOption: PropTypes.string,
   setSelectedOption: PropTypes.func.isRequired,
 };
+

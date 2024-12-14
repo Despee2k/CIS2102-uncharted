@@ -1,6 +1,4 @@
-
-
-import PropTypes from 'prop-types';
+import propTypes from 'prop-types';
 
 const ProgressBar = ({ progress }) => {
   return (
@@ -14,7 +12,7 @@ const ProgressBar = ({ progress }) => {
 };
 
 ProgressBar.propTypes = {
-  progress: PropTypes.number.isRequired,
+  progress: propTypes.number.isRequired,
 };
 
 export default ProgressBar;
