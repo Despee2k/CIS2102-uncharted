@@ -1,10 +1,17 @@
 import { Router } from 'express';
-import { createRecipe } from '../controllers/recipes';
+import { createRecipe, getRecipes } from '../controllers/recipes';
 import { errorHandler } from '../error-handler';
-import multer from 'multer'
+import authMiddleware from '../middlewares/auth';
+import upload from '../middlewares/multer-config';
 
 const recipeRoutes: Router = Router();
-const upload = multer({ dest: 'uploads/' });
 
-recipeRoutes.post('/addrecipe', upload.single('picture'), errorHandler(createRecipe));
+recipeRoutes.post(
+  '/addrecipe',
+  [authMiddleware, upload.single('picture')],
+  errorHandler(createRecipe)
+);
+
+recipeRoutes.get('/', errorHandler(getRecipes));
+
 export default recipeRoutes;

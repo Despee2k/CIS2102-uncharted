@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
-const IngredientsInput = () => {
-  const [ingredients, setIngredients] = useState([]);
+const IngredientsInput = ({ ingredients, setIngredients }) => {
   const [currentIngredient, setCurrentIngredient] = useState("");
   const [editingIndex, setEditingIndex] = useState(null);
   const [editText, setEditText] = useState("");
@@ -28,12 +27,16 @@ const IngredientsInput = () => {
     }
   };
 
+  const handleDeleteIngredient = (index) => {
+    const updatedIngredients = ingredients.filter((_, i) => i !== index);
+    setIngredients(updatedIngredients);
+  };
+
   return (
-    <div className="bg-gray flex flex-col w-2/3 mx-auto mb-5">
-      <label className="text-lg font-heading font-semibold mb-2">Ingredients</label>
+    <div>
       <ul className="list-disc pl-5">
         {ingredients.map((ingredient, index) => (
-          <li key={index} className="mb-2">
+          <li key={index} className="mb-2 flex items-center justify-between">
             {editingIndex === index ? (
               <input
                 type="text"
@@ -45,9 +48,21 @@ const IngredientsInput = () => {
                 autoFocus
               />
             ) : (
-              <span onClick={() => handleEditIngredient(index)} className="cursor-pointer">
+              <span 
+                onClick={() => handleEditIngredient(index)} 
+                className="cursor-pointer flex-grow"
+              >
                 {ingredient}
               </span>
+            )}
+            {editingIndex !== index && (
+              <button 
+                type="button"
+                onClick={() => handleDeleteIngredient(index)}
+                className="ml-2 text-red-500 hover:text-red-700"
+              >
+                ✕
+              </button>
             )}
           </li>
         ))}
@@ -58,7 +73,7 @@ const IngredientsInput = () => {
         onChange={(e) => setCurrentIngredient(e.target.value)}
         onKeyDown={handleAddIngredient}
         placeholder="Ingredient..."
-        className="rounded-md outline outline-1 outline-gray-400 px-4 py-1 mt-2"
+        className="w-full rounded-md outline outline-1 outline-gray-400 px-4 py-1 mt-2"
       />
     </div>
   );

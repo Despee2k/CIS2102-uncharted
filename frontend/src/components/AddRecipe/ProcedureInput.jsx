@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
-const ProcedureInput = () => {
-  const [steps, setSteps] = useState([]);
+const ProcedureInput = ({ steps, setSteps }) => {
   const [currentStep, setCurrentStep] = useState("");
   const [editingIndex, setEditingIndex] = useState(null);
   const [editText, setEditText] = useState("");
@@ -28,12 +27,16 @@ const ProcedureInput = () => {
     }
   };
 
+  const handleDeleteStep = (index) => {
+    const updatedSteps = steps.filter((_, i) => i !== index);
+    setSteps(updatedSteps);
+  };
+
   return (
-    <div className="bg-gray flex flex-col w-2/3 mx-auto mb-5">
-      <label className="text-lg font-heading font-semibold mb-2">Procedure</label>
+    <div>
       <ol className="list-decimal pl-5">
         {steps.map((step, index) => (
-          <li key={index} className="mb-2">
+          <li key={index} className="mb-2 flex items-center justify-between">
             {editingIndex === index ? (
               <input
                 type="text"
@@ -45,9 +48,21 @@ const ProcedureInput = () => {
                 autoFocus
               />
             ) : (
-              <span onClick={() => handleEditStep(index)} className="cursor-pointer">
+              <span 
+                onClick={() => handleEditStep(index)} 
+                className="cursor-pointer flex-grow"
+              >
                 {step}
               </span>
+            )}
+            {editingIndex !== index && (
+              <button 
+                type="button"
+                onClick={() => handleDeleteStep(index)}
+                className="ml-2 text-red-500 hover:text-red-700"
+              >
+                ✕
+              </button>
             )}
           </li>
         ))}
@@ -58,7 +73,7 @@ const ProcedureInput = () => {
         onChange={(e) => setCurrentStep(e.target.value)}
         onKeyDown={handleAddStep}
         placeholder="Step..."
-        className="rounded-md outline outline-1 outline-gray-400 px-4 py-1 mt-2"
+        className="w-full rounded-md outline outline-1 outline-gray-400 px-4 py-1 mt-2"
       />
     </div>
   );

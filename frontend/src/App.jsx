@@ -4,8 +4,8 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignUpPage';
 import ContactPage from './pages/ContactPage';
 import AboutUsPage from './pages/AboutUsPage';
+import AddRecipePage from './pages/AddRecipePage';
 // import RecipePage from './pages/RecipePage';
-// import AddRecipePage from './pages/AddRecipePage';
 import SurveyPage from './pages/SurveyPage';
 
 const App = () => {
@@ -18,8 +18,7 @@ const App = () => {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/about" element={<AboutUsPage />} />
-        <Route path="/survey" element={<SurveyPage />} />
-        {/* <Route path="/addrecipepage" element={<AddRecipePage />} /> */}
+        <Route path="/addrecipe" element={<AddRecipePage />} />
       </Routes>
     </Router>
   );
