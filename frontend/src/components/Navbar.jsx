@@ -46,6 +46,25 @@ const Navbar = () => {
     return "User";
   };
 
+  const getProfilePic = (user) => {
+    if (user) {
+      return <img src={user.profilePic} alt={user.name} className="h-10 w-10 rounded-full" />;
+    }
+    return (
+      <>
+        <Link to="/login" className="text-lg font-medium text-black hover:text-accent transition duration-300">
+          Log in
+        </Link>
+        <Link
+          to="/signup"
+          className="px-4 py-2 bg-accent text-white rounded-md hover:bg-opacity-90 transition duration-300"
+        >
+          Sign up
+        </Link>
+      </>
+    );
+  };
+
   return (
     <>
       <header className="header p-4 bg-[#FAF7F0] shadow-lg">
@@ -111,20 +130,7 @@ const Navbar = () => {
                 </button>
               </div>
             ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="text-lg font-medium text-black hover:text-accent transition duration-300"
-                >
-                  Log in
-                </Link>
-                <Link
-                  to="/signup"
-                  className="px-4 py-2 bg-accent text-white rounded-md hover:bg-opacity-90 transition duration-300"
-                >
-                  Sign up
-                </Link>
-              </>
+              getProfilePic(user)
             )}
           </div>
         </div>
@@ -135,3 +141,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
