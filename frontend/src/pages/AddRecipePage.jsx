@@ -19,7 +19,6 @@ const AddRecipePage = () => {
 
   const [ingredients, setIngredients] = useState([]);
   const [procedure, setProcedure] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data) => {
     if (ingredients.length === 0 || procedure.length === 0) {
@@ -28,10 +27,19 @@ const AddRecipePage = () => {
     }
 
     try {
-      setIsLoading(true);
-      let pictureBase64 = null;
+      // Create FormData for multipart upload
+      const formData = new FormData();
+      formData.append('title', data.title);
+      formData.append('description', data.description);
+      formData.append('category', data.category);
+      formData.append('prepTime', data.prepTime);
+      formData.append('servings', data.servings);
+      
+      // Append ingredients and procedure as JSON strings
+      formData.append('ingredients', JSON.stringify(ingredients));
+      formData.append('procedure', JSON.stringify(procedure));
 
-      // Process picture if provided
+      // Append picture file if exists
       if (data.picture && data.picture[0]) {
         const file = data.picture[0];
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
@@ -46,26 +54,8 @@ const AddRecipePage = () => {
           return;
         }
 
-        // Convert file to base64
-        const reader = new FileReader();
-        pictureBase64 = await new Promise((resolve, reject) => {
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
+        formData.append('picture', file);
       }
-
-      // Prepare JSON payload
-      const payload = {
-        title: data.title,
-        description: data.description,
-        category: data.category,
-        prepTime: data.prepTime,
-        servings: data.servings,
-        ingredients,
-        procedure,
-        picture: pictureBase64,
-      };
 
       // Get token from local storage
       const token = localStorage.getItem('token');
@@ -74,13 +64,13 @@ const AddRecipePage = () => {
         return;
       }
 
-      // Make POST request to backend
+      // Make POST request to backend using multipart/form-data
       const response = await axios.post(
         'http://localhost:8088/api/recipes/addrecipe',
-        payload,
+        formData,
         {
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'multipart/form-data',
             'Authorization': token,
           },
         }
@@ -95,9 +85,7 @@ const AddRecipePage = () => {
       setIngredients([]);
       setProcedure([]);
 
-      setIsLoading(false);
     } catch (error) {
-      setIsLoading(false);
       console.error('Error adding recipe:', error);
       toast.error(
         error.response?.data?.message || 
@@ -199,8 +187,8 @@ const AddRecipePage = () => {
             </div>
           </div>
           <div className="flex gap-4 justify-end mt-6 mb-12 mr-40">
-            <button type="submit" className="px-6 py-2 bg-[#B17457] text-white rounded-2xl text-sm" disabled={isLoading}>
-              {isLoading ? 'Loading...' : 'Submit'}
+            <button type="submit" className="px-6 py-2 bg-[#B17457] text-white rounded-2xl text-sm">
+              Submit
             </button>
           </div>
         </form>
