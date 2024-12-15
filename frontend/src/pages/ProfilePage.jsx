@@ -1,38 +1,76 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import ProfileHeader from "../components/Profile/ProfileHeader";
 import ProfileActions from "../components/Profile/ProfileActions";
 import ProfileTabs from "../components/Profile/ProfileTabs";
-import RecipeGrid from "../components/Profile/RecipeGrid";
+import RecipeCard from "../components/Recipe/RecipeCard"; // Using RecipeCard for consistent styling
 import MealPlanGrid from "../components/Profile/MealPlanGrid";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("posts");
+  const [user, setUser] = useState(null);
+  const [recipes, setRecipes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const profiles = [
-    {
-      id: 1,
-      profilePicture: "https://via.placeholder.com/150",
-      name: "Alniño Pastoriza",
-      handle: "alphas12",
-      bio: "A great chef is an artist that I truly respect.",
-      stats: {
-        posts: 6,
-        followers: 160,
-        following: 272,
-      },
-    },
-  ];
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          navigate("/login");
+          return;
+        }
 
-  const recipes = [
-    { id: 1, image: "https://via.placeholder.com/300", title: "Eggs Benedict" },
-    { id: 2, image: "https://via.placeholder.com/300", title: "Banana Bread" },
-    { id: 3, image: "https://via.placeholder.com/300", title: "Grilled Salmon" },
-    { id: 4, image: "https://via.placeholder.com/300", title: "Deviled Eggs" },
-    { id: 5, image: "https://via.placeholder.com/300", title: "Banana Muffins" },
-    { id: 6, image: "https://via.placeholder.com/300", title: "Herb-Crusted Salmon" },
-  ];
+        // Fetch user profile
+        const userResponse = await axios.get("http://localhost:8088/api/auth/me", {
+          headers: {
+            Authorization: token,
+          },
+        });
+        setUser(userResponse.data);
+
+        // Fetch user's recipes
+        const recipesResponse = await axios.get(
+          "http://localhost:8088/api/recipes/user",
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        );
+
+        const transformedRecipes = recipesResponse.data.map((recipe) => ({
+          id: recipe.id,
+          category: recipe.category,
+          title: recipe.title,
+          image: `http://localhost:8088${recipe.picture}`, // Full URL for image
+          description: recipe.description,
+          ingredients: recipe.ingredients.map((ing) => ing.ingredient),
+          procedure: recipe.procedure.map((proc) => proc.step),
+          rating: 4.5, // Placeholder rating
+          servings: recipe.servings,
+          readyIn: `${recipe.prepTime} mins`,
+          datePosted: recipe.createdAt
+            ? new Date(recipe.createdAt).toLocaleDateString()
+            : "Recently",
+        }));
+
+        setRecipes(transformedRecipes);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+        navigate("/login");
+      }
+    };
+
+    fetchProfileData();
+  }, [navigate]);
 
   const mealPlan = [
     {
@@ -42,51 +80,11 @@ const ProfilePage = () => {
       lunch: 2,
       dinner: 3,
     },
-    {
-      id: 2,
-      day: "Tuesday",
-      breakfast: 4,
-      lunch: 5,
-      dinner: 6,
-    },
-    {
-      id: 3,
-      day: "Wednesday",
-      breakfast: 1,
-      lunch: 2,
-      dinner: 3,
-    },
-    {
-      id: 4,
-      day: "Thursday",
-      breakfast: 4,
-      lunch: 5,
-      dinner: 6,
-    },
-    {
-      id: 5,
-      day: "Friday",
-      breakfast: 1,
-      lunch: 2,
-      dinner: 3,
-    },
-    {
-      id: 6,
-      day: "Saturday",
-      breakfast: 4,
-      lunch: 5,
-      dinner: 6,
-    },
-    {
-      id: 7,
-      day: "Sunday",
-      breakfast: 1,
-      lunch: 2,
-      dinner: 3,
-    },
+    // ... other days
   ];
 
-
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -94,26 +92,39 @@ const ProfilePage = () => {
       <div className="max-w-4xl mx-auto p-4 h-full flex-grow">
         {/* Profile Header */}
         <ProfileHeader
-          profilePicture={profiles[0].profilePicture}
-          name={profiles[0].name}
-          handle={profiles[0].handle}
-          bio={profiles[0].bio}
-          stats={profiles[0].stats}
+          profilePicture="https://via.placeholder.com/150" // Replace with actual profile picture field if available
+          name={user.name}
+          handle={user.email.split("@")[0]}
+          bio="A passionate home chef" // Placeholder
+          stats={{
+            posts: recipes.length,
+            followers: 0, // Placeholder
+            following: 0, // Placeholder
+          }}
         />
 
-        {/* Profile Actions */}
-        <ProfileActions/>
+        <ProfileActions />
 
-        {/* Tabs */}
         <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        {/* Content based on active tab */}
         <div className="max-w-6xl mx-auto px-4 mt-6">
-          {activeTab === "posts" && <RecipeGrid recipes={recipes} />}
+          {activeTab === "posts" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recipes.map((recipe) => (
+                <RecipeCard
+                  key={recipe.id}
+                  recipe={recipe}
+                  onClick={() =>
+                    navigate(`/recipepage/${recipe.id}`, { state: { recipe } })
+                  }
+                />
+              ))}
+            </div>
+          )}
           {activeTab !== "posts" && (
             <MealPlanGrid
-              mealPlan={mealPlan} // Pass the mealPlan data here
-              recipes={recipes}   // Pass the recipes data for meal links
+              mealPlan={mealPlan}
+              recipes={recipes}
             />
           )}
         </div>
