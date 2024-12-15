@@ -6,8 +6,10 @@ import ContactPage from './pages/ContactPage';
 import AboutUsPage from './pages/AboutUsPage';
 import AddRecipePage from './pages/AddRecipePage';
 // import RecipePage from './pages/RecipePage';
+import EditProfilePage from './pages/EditProfilePage';
 import SurveyPage from './pages/SurveyPage';
 import MenuPage from './pages/MenuPage';
+import ProfilePage from './pages/ProfilePage';
 
 const App = () => {
   return (
@@ -22,6 +24,8 @@ const App = () => {
         <Route path="/survey" element={<SurveyPage />} />
         <Route path="/addrecipe" element={<AddRecipePage />} />
         <Route path="/menu" element={<MenuPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/editprofile" element={<EditProfilePage />} />
       </Routes>
     </Router>
   );
