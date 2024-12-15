@@ -46,7 +46,7 @@ const MenuPage = () => {
     rating: 4.5,
     servings: recipe.servings,
     readyIn: `${recipe.prepTime} mins`,
-    author: 'Chef', // You might want to add an author field to your backend model
+    author: 'Chef',
     datePosted: recipe.createdAt ? new Date(recipe.createdAt).toLocaleDateString() : 'Recently'
   }));
 
