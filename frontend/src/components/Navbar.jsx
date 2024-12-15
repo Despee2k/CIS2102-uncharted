@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaSearch } from "react-icons/fa";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
@@ -50,21 +51,23 @@ const Navbar = () => {
       <header className="header p-4 bg-[#FAF7F0] shadow-lg">
         <div className="container mx-auto flex justify-between items-center">
           {/* Logo */}
-          <div className="flex items-center">
-            <img
-              src="../../src/assets/Logo1.png"
-              alt="Logo"
-              className="h-12 w-12 mr-4"
-            />
-            <span className="text-2xl font-semibold text-black font-heading">
-              Uncharted <span className="text-accent">Creatives</span>
-            </span>
-          </div>
+          <Link to="/">
+            <div className="flex items-center">
+              <img
+                src="../../src/assets/Logo1.png"
+                alt="Logo"
+                className="h-12 w-12 mr-4"
+              />
+              <span className="text-2xl font-semibold text-black font-heading">
+                Uncharted <span className="text-accent">Creatives</span>
+              </span>
+            </div>
+          </Link>
 
           {/* Navbar Links */}
           <nav className="flex items-center space-x-6">
             <Link
-              to="/"
+              to="/menu"
               className="text-lg font-medium text-black hover:text-accent transition duration-300"
             >
               Menu
@@ -85,7 +88,7 @@ const Navbar = () => {
 
           {/* Search Bar */}
           <div className="flex items-center border border-accent rounded-md px-3 py-1 w-1/3">
-            <i className="fas fa-search text-accent mr-2"></i>
+            <FaSearch className="text-primary mr-2" />
             <input
               type="text"
               placeholder="Search"
