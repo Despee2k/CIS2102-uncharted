@@ -4,41 +4,52 @@ import { AddRecipeSchema } from '../schema/recipes';
 import { z } from 'zod';
 
 export const createRecipe = async (req: Request, res: Response) => {
-  // Validate input data
-  const inputSchema = AddRecipeSchema.extend({
-    ingredients: z.array(z.string().min(1)),
-    procedure: z.array(z.string().min(1)),
-  });
+  console.log('Uploaded file:', req.file); // Debugging
 
   try {
-    const data = inputSchema.parse(req.body);
-
     // Ensure user is authenticated
     if (!req.user) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    let pictureUrl = '/api/placeholder/400/320';
-    if (req.file) {
-      pictureUrl = `/uploads/${req.file.filename}`;
+    // Parse input data
+    const { title, description, servings, prepTime, category, ingredients, procedure } = req.body;
+
+    // Validate input data
+    if (!title || !description || !servings || !prepTime || !category) {
+      return res.status(400).json({ message: "All fields are required." });
     }
 
+    // Parse ingredients and procedure from JSON strings
+    const ingredientsList = JSON.parse(ingredients);
+    const procedureSteps = JSON.parse(procedure);
+
+    if (!Array.isArray(ingredientsList) || !Array.isArray(procedureSteps)) {
+      return res.status(400).json({ message: "Ingredients and procedure must be arrays." });
+    }
+
+    // Check file upload
+    const picturePath = req.file 
+      ? `/uploads/${req.file.filename}` 
+      : '/api/placeholder/400/320';
+
+    // Save recipe to the database
     const recipe = await prismaClient.recipe.create({
       data: {
-        title: data.title,
-        description: data.description,
-        servings: data.servings,
-        prepTime: data.prepTime,
-        category: data.category,
-        picture: pictureUrl,
+        title,
+        description,
+        servings: parseInt(servings),
+        prepTime: parseInt(prepTime),
+        category,
+        picture: picturePath,
         ingredients: {
           createMany: {
-            data: data.ingredients.map((ingredient) => ({ ingredient })),
+            data: ingredientsList.map((ingredient: string) => ({ ingredient })),
           },
         },
         procedure: {
           createMany: {
-            data: data.procedure.map((step) => ({ step })),
+            data: procedureSteps.map((step: string) => ({ step })),
           },
         },
       },
@@ -48,13 +59,6 @@ export const createRecipe = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Recipe creation error:', error);
 
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({
-        message: 'Invalid input data',
-        errors: error.errors,
-      });
-    }
-
     res.status(500).json({
       message: 'Failed to create recipe',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -62,13 +66,15 @@ export const createRecipe = async (req: Request, res: Response) => {
   }
 };
 
+
+
 export const getRecipes = async (req: Request, res: Response) => {
   try {
     const recipes = await prismaClient.recipe.findMany({
       include: {
         ingredients: true,
-        procedure: true,
-      },
+        procedure: true
+      }
     });
     res.json(recipes);
   } catch (error) {

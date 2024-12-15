@@ -10,6 +10,7 @@ const app: Express = express();
 app.use(cors());
 app.use(express.json());
 app.use('/api', rootRouter);
+app.use('/uploads', express.static('uploads'));
 
 export const prismaClient = new PrismaClient({
   log: ['query'],
