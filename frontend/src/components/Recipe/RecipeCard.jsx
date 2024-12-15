@@ -1,11 +1,13 @@
-import PropTypes from 'prop-types';
 import Rating from '@mui/material/Rating';
 
-const RecipeCard = ({ recipe }) => {
+const RecipeCard = ({ recipe, onClick }) => {
   const precision = Number.isInteger(recipe.rating) ? 1 : 0.5;
-  
+
   return (
-    <div className="bg-secondary p-4 rounded-lg shadow-md opacity-80">
+    <div
+      onClick={onClick}
+      className="bg-secondary p-4 rounded-lg shadow-md opacity-80 hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+    >
       <img
         src={recipe.image}
         alt={recipe.title}
@@ -31,14 +33,4 @@ const RecipeCard = ({ recipe }) => {
   );
 };
 
-RecipeCard.propTypes = {
-  recipe: PropTypes.shape({
-    image: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    rating: PropTypes.number.isRequired,
-    description: PropTypes.string.isRequired,
-  }).isRequired,
-};
-
 export default RecipeCard;
-

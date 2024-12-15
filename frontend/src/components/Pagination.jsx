@@ -1,59 +1,38 @@
-import propTypes from "prop-types";
-
 const Pagination = ({ totalPages, currentPage, setCurrentPage }) => {
-  const handlePageChange = (page) => {
-    if (page > 0 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
+  const pageNumbers = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pageNumbers.push(i);
+  }
 
   return (
-    <div className="flex justify-center items-center space-x-2 mt-4">
-      {/* Previous Button */}
+    <div className="flex space-x-2">
       <button
-        onClick={() => handlePageChange(currentPage - 1)}
-        className={`text-gray-500 hover:text-gray-700 ${
-          currentPage === 1 ? "pointer-events-none opacity-50" : ""
-        }`}
+        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+        disabled={currentPage === 1}
+        className="px-3 py-1 border rounded disabled:opacity-50 text-gray-500 hover:text-gray-700" // Steal styles from static page
       >
-        &lt; Prev
+        Prev
       </button>
-
-      {/* Page Numbers */}
-      {Array.from({ length: totalPages }).map((_, index) => {
-        const page = index + 1;
-        return (
-          <button
-            key={page}
-            onClick={() => handlePageChange(page)}
-            className={`px-3 py-1 border rounded-md transition-colors ${
-              currentPage === page
-                ? "bg-[#A2674A] text-white border-[#A2674A] font-semibold"
-                : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
-            }`}
-          >
-            {page}
-          </button>
-        );
-      })}
-
-      {/* Next Button */}
+      {pageNumbers.map(number => (
+        <button
+          key={number}
+          onClick={() => setCurrentPage(number)}
+          className={`px-3 py-1 border rounded ${
+            currentPage === number ? 'bg-[#A2674A] text-white border-[#A2674A] font-semibold' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
+          }`} // Use original styles for functionality
+        >
+          {number}
+        </button>
+      ))}
       <button
-        onClick={() => handlePageChange(currentPage + 1)}
-        className={`text-gray-500 hover:text-gray-700 ${
-          currentPage === totalPages ? "pointer-events-none opacity-50" : ""
-        }`}
+        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+        disabled={currentPage === totalPages}
+        className="px-3 py-1 border rounded disabled:opacity-50 text-gray-500 hover:text-gray-700" // Steal styles from static page
       >
-        Next &gt;
+        Next
       </button>
     </div>
   );
 };
 
 export default Pagination;
-
-Pagination.propTypes = {
-  totalPages: propTypes.number.isRequired,
-  currentPage: propTypes.number.isRequired,
-  setCurrentPage: propTypes.func.isRequired,
-};
