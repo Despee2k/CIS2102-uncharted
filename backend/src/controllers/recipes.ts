@@ -4,23 +4,18 @@ import { AddRecipeSchema } from '../schema/recipes';
 import { z } from 'zod';
 
 export const createRecipe = async (req: Request, res: Response) => {
-  console.log('Uploaded file:', req.file); // Debugging
-
   try {
-    // Ensure user is authenticated
+
     if (!req.user) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    // Parse input data
     const { title, description, servings, prepTime, category, ingredients, procedure } = req.body;
 
-    // Validate input data
     if (!title || !description || !servings || !prepTime || !category) {
       return res.status(400).json({ message: "All fields are required." });
     }
 
-    // Parse ingredients and procedure from JSON strings
     const ingredientsList = JSON.parse(ingredients);
     const procedureSteps = JSON.parse(procedure);
 
@@ -28,12 +23,10 @@ export const createRecipe = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Ingredients and procedure must be arrays." });
     }
 
-    // Check file upload
     const picturePath = req.file 
       ? `/uploads/${req.file.filename}` 
       : '/api/placeholder/400/320';
 
-    // Save recipe to the database
     const recipe = await prismaClient.recipe.create({
       data: {
         title,
@@ -42,6 +35,7 @@ export const createRecipe = async (req: Request, res: Response) => {
         prepTime: parseInt(prepTime),
         category,
         picture: picturePath,
+        authorId: (req.user as any).id,
         ingredients: {
           createMany: {
             data: ingredientsList.map((ingredient: string) => ({ ingredient })),
@@ -66,18 +60,47 @@ export const createRecipe = async (req: Request, res: Response) => {
   }
 };
 
-
-
 export const getRecipes = async (req: Request, res: Response) => {
   try {
     const recipes = await prismaClient.recipe.findMany({
+      where: {
+        approvalStatus: 'APPROVED' // Only fetch approved recipes
+      },
       include: {
         ingredients: true,
-        procedure: true
+        procedure: true,
+        author: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
       }
     });
     res.json(recipes);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch recipes' });
+  }
+};
+
+export const getUserRecipes = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const recipes = await prismaClient.recipe.findMany({
+      where: {
+        authorId: (req.user as any).id
+      },
+      include: {
+        ingredients: true,
+        procedure: true
+      }
+    });
+
+    res.json(recipes);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch user recipes' });
   }
 };
