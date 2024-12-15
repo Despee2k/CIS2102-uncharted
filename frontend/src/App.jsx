@@ -10,6 +10,7 @@ import EditProfilePage from './pages/EditProfilePage';
 import SurveyPage from './pages/SurveyPage';
 import MenuPage from './pages/MenuPage';
 import ProfilePage from './pages/ProfilePage';
+import ArchivePage from './pages/ArchivePage';
 
 const App = () => {
   return (
@@ -26,6 +27,7 @@ const App = () => {
         <Route path="/menu" element={<MenuPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/editprofile" element={<EditProfilePage />} />
+        <Route path="/archive" element={<ArchivePage />} />
       </Routes>
     </Router>
   );
