@@ -1,24 +1,47 @@
-import { useState} from "react";
+import { useState, useEffect } from "react";
 import EditProfileForm from "../features/EditProfile/EditProfileForm";
 import ModalUnsavedChanges from "../features/EditProfile/UnsavedChangesModal";
 import Navbar from "../components/Navbar";
-import { useNavigate } from 'react-router-dom'; // Correct import
+import { useNavigate } from 'react-router-dom';
+import { fetchUserProfile, updateUserProfile } from "../services/userService";
 
 const EditProfilePage = () => {
   const [formData, setFormData] = useState({
-    profilePicture: "", // Add profile picture state
-    username: "Alniño Pastoriza",
-    email: "alniño@example.com",
-    firstName: "Alniño",
-    lastName: "Pastoriza",
-    bio: "A great chef is an artist that I truly respect.",
-    gender: "Male",
-    password: "********",
+    name: "", // Changed from username to match backend
+    email: "",
+    bio: "",
+  });
+
+  const [originalData, setOriginalData] = useState({
+    name: "",
+    email: "",
+    bio: "",
   });
 
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const userData = await fetchUserProfile();
+        const profileData = {
+          name: userData.name,
+          email: userData.email,
+          bio: userData.bio || "",
+        };
+        
+        setFormData(profileData);
+        setOriginalData(profileData);
+      } catch (error) {
+        console.error("Failed to fetch user profile", error);
+        navigate('/login'); // Redirect to login if fetch fails
+      }
+    };
+
+    fetchProfile();
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,32 +49,48 @@ const EditProfilePage = () => {
       ...prevData,
       [name]: value,
     }));
-    setUnsavedChanges(true);
+    
+    // Check if the current value is different from the original
+    setUnsavedChanges(
+      Object.keys(originalData).some(
+        key => originalData[key] !== (name === key ? value : formData[key])
+      )
+    );
   };
 
-  const handleSave = () => {
-    alert("Profile saved!");
-    console.log("Saved Data:", formData);
-    // Add backend API logic here
-    setUnsavedChanges(false);
+  const handleSave = async () => {
+    try {
+      // Prepare data to match backend schema
+      const updateData = {
+        name: formData.name,
+        email: formData.email,
+        bio: formData.bio || null,
+      };
+
+      await updateUserProfile(updateData);
+      alert("Profile updated successfully!");
+      setUnsavedChanges(false);
+      navigate("/profile");
+    } catch (error) {
+      console.error("Failed to update profile", error);
+      alert("Failed to update profile. Please try again.");
+    }
   };
 
   const handleCancel = () => {
-    console.log("HandleCancel called, unsavedChanges:", unsavedChanges);
     if (unsavedChanges) {
       setShowModal(true);
-      console.log("showModal set to true");
     } else {
       navigate("/profile");
     }
   };
 
   const handleModalCancel = () => {
-    setShowModal(false); // Close modal without discarding
+    setShowModal(false);
   };
 
   const handleModalConfirm = () => {
-    setShowModal(false); // Close modal and navigate
+    setShowModal(false);
     navigate("/profile");
   };
 
@@ -68,9 +107,9 @@ const EditProfilePage = () => {
       </main>
       {showModal && (
         <ModalUnsavedChanges
-          show={showModal} // Pass the modal visibility
-          onCancel={handleModalCancel} // Pass cancel function
-          onConfirm={handleModalConfirm} // Pass confirm function
+          isOpen={showModal}
+          onClose={handleModalCancel}
+          onDiscard={handleModalConfirm}
         />
       )}
       <footer className="mt-12 text-center text-sm text-gray-500">
