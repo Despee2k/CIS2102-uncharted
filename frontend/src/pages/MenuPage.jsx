@@ -35,14 +35,19 @@ const MenuPage = () => {
     fetchRecipes();
   }, []);
 
-  // Transform fetched recipes to match the existing data structure
   const transformedRecipes = recipes.map(recipe => ({
     id: recipe.id,
     category: recipe.category,
     title: recipe.title,
     image: `http://localhost:8088${recipe.picture}`,
     description: recipe.description,
-    rating: 4.5 // You might want to add a rating field to your backend model
+    ingredients: recipe.ingredients.map(ing => ing.ingredient),
+    procedure: recipe.procedure.map(proc => proc.step),
+    rating: 4.5,
+    servings: recipe.servings,
+    readyIn: `${recipe.prepTime} mins`,
+    author: 'Chef', // You might want to add an author field to your backend model
+    datePosted: recipe.createdAt ? new Date(recipe.createdAt).toLocaleDateString() : 'Recently'
   }));
 
   const filteredRecipes = transformedRecipes.filter(
@@ -72,7 +77,7 @@ const MenuPage = () => {
             <RecipeCard 
               key={recipe.id} 
               recipe={recipe} 
-              onClick={() => navigate('/recipe', { state: { recipe } })}
+              onClick={() => navigate(`/recipepage/${recipe.id}`, { state: { recipe } })}
             />
           ))}
         </div>

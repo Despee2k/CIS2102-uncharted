@@ -1,28 +1,43 @@
+import { useLocation } from 'react-router-dom';
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import Ingredients from "../components/RecipePage/Ingredients";
 import Procedure from "../components/RecipePage/Procedure";
 import RecipeInfo from "../components/RecipePage/RecipeInfo";
-import recipes from "../data/recipes";
 
 const RecipePage = () => {
+  const location = useLocation();
+  const { recipe } = location.state || {};
+
+  if (!recipe) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="flex justify-center items-center h-full">
+          <p>Recipe not found</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
         <div className="flex">
-            <Ingredients ingredients={recipes[0].ingredients} />
-            <div className="overflow y-auto">
+            <Ingredients ingredients={recipe.ingredients} />
+            <div className="overflow-y-auto">
               <RecipeInfo  
-                title={recipes[0].title}
-                image={recipes[0].image}
-                rating={recipes[0].rating}
-                description={recipes[0].description}
-                author={recipes[0].author}
-                datePosted={recipes[0].datePosted}
-                readyIn={recipes[0].readyIn}
-                serving={recipes[0].serving}
+                title={recipe.title}
+                image={recipe.image}
+                rating={recipe.rating || 4.5}
+                description={recipe.description}
+                author={recipe.author || 'Unknown'}
+                datePosted={recipe.datePosted || 'Recently'}
+                readyIn={recipe.readyIn || 'Not specified'}
+                serving={recipe.servings || 'Not specified'}
               />
-              <Procedure procedure={recipes[0].procedure} />
+              <Procedure procedure={recipe.procedure} />
             </div>
         </div>
         <Footer />
