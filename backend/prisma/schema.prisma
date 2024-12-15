@@ -21,6 +21,7 @@ model User {
   name String
   email String @unique
   password String
+  bio String?  // Optional bio field
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   

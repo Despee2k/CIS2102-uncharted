@@ -11,9 +11,9 @@ import { NotFoundException } from "../exceptions/not-found";
 
 export const signup = async (req:Request, res:Response) => {
     SignUpSchema.parse(req.body)
-    const {name, email, password} = req.body;
+    const {name, email, password, bio} = req.body;
 
-    let user = await prismaClient.user.findFirst({where: {email: email}})
+    let user = await prismaClient.user.findFirst({where: {email: email}});
     if(user){
         throw new BadRequestsException("User already exists!", ErrorCode.USER_ALREADY_EXISTS);
     }
@@ -21,7 +21,8 @@ export const signup = async (req:Request, res:Response) => {
         data:{
             name,
             email,
-            password: hashSync(password, 10)
+            password: hashSync(password, 10),
+            bio: bio || null  // Optional bio
         }
     })
     res.json(user);
@@ -30,21 +31,64 @@ export const signup = async (req:Request, res:Response) => {
 export const login = async (req:Request, res:Response) => {
     const {email, password} = req.body;
 
-    let user = await prismaClient.user.findFirst({where: {email: email}})
+    let user = await prismaClient.user.findFirst({where: {email: email}});
     if(!user){
         throw new NotFoundException("User does not exist!", ErrorCode.USER_NOT_FOUND);
     }
     if(!compareSync(password, user.password)){
         throw new BadRequestsException("Incorrect password!", ErrorCode.INCORRECT_PASSWORD);
     }
-    const token = jwt.sign({
-        userId: user.id
-    }, JWT_SECRET)
+    const token = jwt.sign(
+        { userId: user.id },
+        JWT_SECRET,
+        { expiresIn: '2h' }  // Ensure the token expires (e.g., in 1 hour)
+    );
 
     res.json({user, token});
 }
 
-// /me -> return the logged in user
+// /me -> return the logged-in user
 export const me = async (req: Request, res: Response) => {
-    res.json(req.user);
+    // Check if user's bio is null and replace with "No bio" if it is
+    const userWithBio = req.user ? {
+        ...req.user, 
+        bio: (req.user as any).bio || "No bio"
+    } : null;
+    res.json(userWithBio);
 }
+
+export const updateProfile = async (req: Request, res: Response) => {
+    if (!req.user) {
+        throw new NotFoundException("Unauthorized!", ErrorCode.UNAUTHORIZED);
+    }
+
+    const { name, email, bio } = req.body;
+    const userId = req.user.id;  // Access user.id directly since req.user contains the user object
+
+    try {
+        const existingUser = await prismaClient.user.findFirst({
+            where: { email, NOT: { id: userId } }
+        });
+
+        if (existingUser) {
+            throw new NotFoundException("Email is already in use!", ErrorCode.USER_ALREADY_EXISTS);
+        }
+
+        const updatedUser = await prismaClient.user.update({
+            where: { id: userId },
+            data: { name, email, bio: bio || "" },  // Set bio to empty string if not provided
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                bio: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        });
+
+        res.json(updatedUser);
+    } catch (error) {
+        throw new NotFoundException("Failed to update profile!", ErrorCode.INCORRECT_PASSWORD);
+    }
+};
