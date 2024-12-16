@@ -21,13 +21,13 @@ model User {
   name String
   email String @unique
   password String
-  bio String?  // Optional bio field
+  bio String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  // New relation to recipes
   recipes Recipe[]
-
+  ratings RecipeRating[]
+  
   @@map("users")
 }
 
@@ -50,9 +50,24 @@ model Recipe {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  totalRating Float @default(0)
+  totalRatings Int @default(0)
+  ratings RecipeRating[]
+
   @@map("recipes")
 }
 
+model RecipeRating {
+  id         Int      @id @default(autoincrement())
+  recipeId   Int
+  userId     Int
+  rating     Float
+  recipe     Recipe   @relation(fields: [recipeId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@unique([recipeId, userId])
+  @@map("recipe_ratings")
+}
 
 model RecipeIngredient {
   id         Int    @id @default(autoincrement())

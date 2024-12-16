@@ -60,11 +60,82 @@ export const createRecipe = async (req: Request, res: Response) => {
   }
 };
 
+export const rateRecipe = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const { recipeId } = req.params;
+    const { rating } = req.body;
+
+    // Validate rating
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ message: 'Invalid rating' });
+    }
+
+    const userId = (req.user as any).id;
+
+    // Check if user has already rated this recipe
+    const existingRating = await prismaClient.recipeRating.findUnique({
+      where: {
+        recipeId_userId: {
+          recipeId: parseInt(recipeId),
+          userId: userId
+        }
+      }
+    });
+
+    if (existingRating) {
+      return res.status(400).json({ message: 'You have already rated this recipe' });
+    }
+
+    // Create new rating
+    const newRating = await prismaClient.recipeRating.create({
+      data: {
+        recipeId: parseInt(recipeId),
+        userId: userId,
+        rating: rating
+      }
+    });
+
+    // Fetch all ratings for this recipe
+    const recipeRatings = await prismaClient.recipeRating.findMany({
+      where: { recipeId: parseInt(recipeId) }
+    });
+
+    // Calculate new average rating
+    const totalRating = recipeRatings.reduce((sum, r) => sum + r.rating, 0);
+    const averageRating = totalRating / recipeRatings.length;
+
+    // Update recipe with new rating
+    const updatedRecipe = await prismaClient.recipe.update({
+      where: { id: parseInt(recipeId) },
+      data: {
+        totalRating: averageRating,
+        totalRatings: recipeRatings.length
+      }
+    });
+
+    res.json({ 
+      recipe: updatedRecipe, 
+      newRating: averageRating 
+    });
+  } catch (error) {
+    console.error('Recipe rating error:', error);
+    res.status(500).json({
+      message: 'Failed to rate recipe',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+};
+
+// Update getRecipes to include rating information
 export const getRecipes = async (req: Request, res: Response) => {
   try {
     const recipes = await prismaClient.recipe.findMany({
       where: {
-        approvalStatus: 'APPROVED' // Only fetch approved recipes
+        approvalStatus: 'APPROVED'
       },
       include: {
         ingredients: true,
@@ -77,7 +148,20 @@ export const getRecipes = async (req: Request, res: Response) => {
         }
       }
     });
-    res.json(recipes);
+    
+    const transformedRecipes = recipes.map(recipe => ({
+      ...recipe,
+      id: recipe.id,
+      authorName: recipe.author.name,
+      rating: recipe.totalRating || 0,
+      totalRatings: recipe.totalRatings || 0,
+      image: recipe.picture,
+      createdAt: recipe.createdAt,
+      ingredients: recipe.ingredients,
+      procedure: recipe.procedure
+    }));
+
+    res.json(transformedRecipes);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch recipes' });
   }
