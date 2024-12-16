@@ -6,32 +6,33 @@ import { JWT_SECRET } from "../secrets";
 import { prismaClient } from "..";
 
 const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-    // 1. Extract the token from the Authorization header
-    const token = req.headers.authorization;  // Format: Token (no Bearer)
+    console.log('AuthMiddleware triggered');  // This should print every time a protected route is accessed
+    const token = req.headers.authorization;  // Extract the token
 
-    console.log("Authorization header:", token);  // Log token for debugging
-    
-    // 2. If token is not present, throw an unauthorized error
+    console.log('Authorization header:', req.headers);  // Log all headers to check for token presence
+    console.log('Token extracted:', token);  // Log the token extracted
+
     if (!token) {
+        console.log('No token found');
         return next(new UnauthorizedException("Unauthorized!", ErrorCode.UNAUTHORIZED));
     }
 
     try {
-        // 3. If the token is present, verify it and extract the payload
         const payload = jwt.verify(token, JWT_SECRET) as any;
-
-        // 4. Fetch the user associated with the token payload
+        console.log('Token payload:', payload);  // Log the decoded token payload
         const user = await prismaClient.user.findFirst({ where: { id: payload.userId } });
 
         if (!user) {
+            console.log('User not found');
             return next(new UnauthorizedException("Unauthorized!", ErrorCode.UNAUTHORIZED));
         }
 
-        // 5. Attach the user object to the request object
         (req as any).user = user;
+        console.log('User attached to req.user:', req.user);  // Log the user attached to the request
+
         next();
     } catch (error) {
-        console.error("Token verification error:", error);  // Log token verification error
+        console.error('Token verification error:', error);  // Log any errors during token verification
         next(new UnauthorizedException("Unauthorized!", ErrorCode.UNAUTHORIZED));
     }
 };

@@ -41,10 +41,17 @@ export const login = async (req:Request, res:Response) => {
     const token = jwt.sign(
         { userId: user.id },
         JWT_SECRET,
-        { expiresIn: '2h' }  // Ensure the token expires (e.g., in 1 hour)
+        { expiresIn: '2h' }
     );
 
-    res.json({user, token});
+    // Check if survey is completed
+    const needsSurvey = !user.completedSurvey;
+
+    res.json({
+        user, 
+        token, 
+        needsSurvey
+    });
 }
 
 // /me -> return the logged-in user
@@ -92,3 +99,34 @@ export const updateProfile = async (req: Request, res: Response) => {
         throw new NotFoundException("Failed to update profile!", ErrorCode.INCORRECT_PASSWORD);
     }
 };
+
+export const completeSurvey = async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+  
+      const { allergies } = req.body;
+  
+      // Convert array to comma-separated string
+      const allergiesString = Array.isArray(allergies) 
+        ? allergies.join(',') 
+        : '';
+  
+      const updatedUser = await prismaClient.user.update({
+        where: { id: (req.user as any).id },
+        data: {
+          allergies: allergiesString,
+          completedSurvey: true
+        }
+      });
+  
+      res.json(updatedUser);
+    } catch (error) {
+      console.error('Survey completion error:', error);
+      res.status(500).json({ 
+        message: 'Failed to complete survey',
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
+    }
+  };

@@ -133,6 +133,14 @@ export const rateRecipe = async (req: Request, res: Response) => {
 // Update getRecipes to include rating information
 export const getRecipes = async (req: Request, res: Response) => {
   try {
+    // If user is authenticated, get their allergies
+    const userAllergies = req.user 
+      ? ((req.user as any).allergies || '').split(',') // Split by commas to form an array
+          .map((allergy: string) => allergy.trim().toLowerCase()) // Trim whitespace and convert to lowercase
+          .filter((allergy: string) => allergy !== '') // Remove any empty strings
+      : [];
+    console.log(userAllergies);
+    console.log("USER WHAT: ", req.user);
     const recipes = await prismaClient.recipe.findMany({
       where: {
         approvalStatus: 'APPROVED'
@@ -148,8 +156,24 @@ export const getRecipes = async (req: Request, res: Response) => {
         }
       }
     });
-    
-    const transformedRecipes = recipes.map(recipe => ({
+
+    // Filter out recipes with allergens
+    const filteredRecipes = recipes.filter(recipe => {
+      // If no allergies, return all recipes
+      if (userAllergies.length === 0) return true;
+
+      // Check if any ingredient contains an allergy
+      const hasAllergen = recipe.ingredients.some(ingredient =>
+        userAllergies.some((allergy: string) => 
+          ingredient.ingredient.toLowerCase().includes(allergy.toLowerCase())
+        )
+      );
+
+      // Return recipe only if no allergens found
+      return !hasAllergen;
+    });
+
+    const transformedRecipes = filteredRecipes.map(recipe => ({
       ...recipe,
       id: recipe.id,
       authorName: recipe.author.name,

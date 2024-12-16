@@ -18,7 +18,7 @@ recipeRoutes.post(
   errorHandler(rateRecipe)
 );
 
-recipeRoutes.get('/', errorHandler(getRecipes));
+recipeRoutes.get('/', [authMiddleware], errorHandler(getRecipes));  // This should use the authMiddleware
 
 recipeRoutes.get('/user', [authMiddleware], errorHandler(getUserRecipes));
 

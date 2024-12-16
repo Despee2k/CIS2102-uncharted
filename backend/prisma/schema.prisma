@@ -28,6 +28,10 @@ model User {
   recipes Recipe[]
   ratings RecipeRating[]
   
+  // Updated to store allergies as comma-separated string
+  allergies String? @default("")
+  completedSurvey Boolean @default(false)
+  
   @@map("users")
 }
 
