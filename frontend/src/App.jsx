@@ -14,6 +14,9 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import PendingRequests from './pages/PendingRequests';
 import PendingDetails from './pages/PostDetails';
+import SearchResults from './components/SearchResults';
+
+
 const App = () => {
   return (
     <Router>
@@ -34,6 +37,7 @@ const App = () => {
         <Route path="/pendingrequests" element={<PendingRequests />} />
         <Route path="/post-details/:recipeId" element={<PendingDetails />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/search-results" element={<SearchResults />} />
       </Routes>
     </Router>
   );

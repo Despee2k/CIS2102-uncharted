@@ -3,28 +3,27 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaSearch } from "react-icons/fa";
+import axios from "axios";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]); // Ensure it's always an array
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
-    // Check for user in localStorage on component mount
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
   }, []);
 
   const handleLogout = () => {
-    // Remove user data from localStorage
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    
-    // Update user state
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
     setUser(null);
-    
-    // Show logout toast
+
     toast.success("Logout successful!", {
       position: "bottom-right",
       autoClose: 3000,
@@ -34,25 +33,64 @@ const Navbar = () => {
       draggable: true,
     });
 
-    // Redirect to login
-    navigate('/');
+    navigate("/");
+  };
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+  
+    const token = localStorage.getItem("token"); // Get token from localStorage
+  
+    try {
+      const response = await axios.get(
+        `http://localhost:8088/api/recipes/search?query=${encodeURIComponent(searchQuery)}`,
+        {
+          headers: {
+            Authorization: token
+          },
+        }
+      );
+      setSearchResults(response.data);
+      setIsDropdownOpen(true);
+    } catch (error) {
+      console.error("Error during search:", error);
+      toast.error("Failed to search. Please try again.", {
+        position: "top-center",
+      });
+    }
+  };
+  
+
+  const handleResultClick = (id) => {
+    setIsDropdownOpen(false);
+    navigate(`/recipepage/${id}`);
   };
 
   const getFirstName = (name) => {
     if (name) {
       const names = name.split(" ");
-      return names[0]; // Return the first name
+      return names[0];
     }
     return "User";
   };
 
   const getProfilePic = (user) => {
     if (user) {
-      return <img src={user.profilePic} alt={user.name} className="h-10 w-10 rounded-full" />;
+      return (
+        <img
+          src={user.profilePic}
+          alt={user.name}
+          className="h-10 w-10 rounded-full"
+        />
+      );
     }
     return (
       <>
-        <Link to="/login" className="text-lg font-medium text-black hover:text-accent transition duration-300">
+        <Link
+          to="/login"
+          className="text-lg font-medium text-black hover:text-accent transition duration-300"
+        >
           Log in
         </Link>
         <Link
@@ -69,7 +107,6 @@ const Navbar = () => {
     <>
       <header className="header p-4 bg-[#FAF7F0] shadow-lg">
         <div className="container mx-auto flex justify-between items-center">
-          {/* Logo */}
           <Link to="/">
             <div className="flex items-center">
               <img
@@ -83,7 +120,6 @@ const Navbar = () => {
             </div>
           </Link>
 
-          {/* Navbar Links */}
           <nav className="flex items-center space-x-6">
             <Link
               to="/menu"
@@ -124,21 +160,42 @@ const Navbar = () => {
             )}
           </nav>
 
-          {/* Search Bar */}
-          <div className="flex items-center border border-accent rounded-md px-3 py-1 w-1/3">
-            <FaSearch className="text-primary mr-2" />
-            <input
-              type="text"
-              placeholder="Search"
-              className="bg-transparent focus:outline-none text-black w-full"
-            />
+          <div className="relative">
+            <form
+              className="flex items-center border border-accent rounded-md px-3 py-1 w-72"
+              onSubmit={handleSearch}
+            >
+              <FaSearch className="text-primary mr-2" />
+              <input
+                type="text"
+                placeholder="Search recipes"
+                className="bg-transparent focus:outline-none text-black w-full"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </form>
+
+            {isDropdownOpen && searchResults.length > 0 && (
+              <div className="absolute top-full left-0 bg-white border border-gray-200 shadow-md w-full mt-2 rounded-md z-50">
+                <ul>
+                  {searchResults.map((result) => (
+                    <li
+                      key={result.id}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => handleResultClick(result.id)}
+                    >
+                      {result.title}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
-          {/* Login and Sign-Up Buttons */}
           <div className="flex items-center space-x-4">
             {user ? (
               <div className="flex items-center space-x-4">
-                <Link 
+                <Link
                   to="/profile"
                   className="text-lg font-medium text-gray-700 hover:underline transition duration-300"
                 >
@@ -163,3 +220,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
