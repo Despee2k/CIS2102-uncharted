@@ -35,7 +35,7 @@ const Navbar = () => {
     });
 
     // Redirect to login
-    navigate('/login');
+    navigate('/');
   };
 
   const getFirstName = (name) => {
@@ -91,18 +91,37 @@ const Navbar = () => {
             >
               Menu
             </Link>
-            <Link
-              to="/about"
-              className="text-lg font-medium text-black hover:text-accent transition duration-300"
-            >
-              About Us
-            </Link>
-            <Link
-              to="/contact"
-              className="text-lg font-medium text-black hover:text-accent transition duration-300"
-            >
-              Contact Us
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  to="/addrecipe"
+                  className="text-lg font-medium text-black hover:text-accent transition duration-300"
+                >
+                  Add Recipe
+                </Link>
+                <Link
+                  to="/meal-plan"
+                  className="text-lg font-medium text-black hover:text-accent transition duration-300"
+                >
+                  Meal Plan
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/about"
+                  className="text-lg font-medium text-black hover:text-accent transition duration-300"
+                >
+                  About Us
+                </Link>
+                <Link
+                  to="/contact"
+                  className="text-lg font-medium text-black hover:text-accent transition duration-300"
+                >
+                  Contact Us
+                </Link>
+              </>
+            )}
           </nav>
 
           {/* Search Bar */}
@@ -119,9 +138,12 @@ const Navbar = () => {
           <div className="flex items-center space-x-4">
             {user ? (
               <div className="flex items-center space-x-4">
-                <span className="text-lg font-medium text-gray-700">
+                <Link 
+                  to="/profile"
+                  className="text-lg font-medium text-gray-700 hover:underline transition duration-300"
+                >
                   Hello, {getFirstName(user.name || user.email)}
-                </span>
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="px-4 py-2 bg-accent text-white rounded-md hover:bg-opacity-90 transition duration-300"
@@ -141,4 +163,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
