@@ -15,14 +15,23 @@ const MenuPage = () => {
   const [activeCategory, setActiveCategory] = useState('Breakfast');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
-
+  
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const response = await fetch('http://localhost:8088/api/recipes');
+        const token = localStorage.getItem('token'); // Get token from localStorage
+
+        const response = await fetch('http://localhost:8088/api/recipes', {
+          method: 'GET',
+          headers: {
+            'Authorization': token  // Include the token in the Authorization header
+          }
+        });
+
         if (!response.ok) {
           throw new Error('Failed to fetch recipes');
         }
+
         const data = await response.json();
         setRecipes(data);
         setLoading(false);
@@ -31,9 +40,10 @@ const MenuPage = () => {
         setLoading(false);
       }
     };
-
+  
     fetchRecipes();
   }, []);
+  
 
   const transformedRecipes = recipes.map(recipe => ({
     id: recipe.id,

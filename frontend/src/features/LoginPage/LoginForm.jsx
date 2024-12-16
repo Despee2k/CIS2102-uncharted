@@ -10,17 +10,20 @@ import Button from '../../components/Button';
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError(''); // Clear previous error messages
+
     try {
       const response = await axios.post('http://localhost:8088/api/auth/login', {
         email,
         password
       });
 
-      // Save token and user info to localStorage
+      // Save token to localStorage
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
 
@@ -29,10 +32,16 @@ const LoginForm = () => {
         autoClose: 3000,
       });
 
-      // Redirect to home page
-      navigate('/');
+      // Check if the user needs to complete a survey
+      if (response.data.needsSurvey) {
+        navigate('/survey');
+      } else {
+        navigate('/'); // Redirect to home page
+      }
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed', {
+      const errorMessage = err.response?.data?.message || 'Login failed';
+      setError(errorMessage);
+      toast.error(errorMessage, {
         position: "bottom-right",
         autoClose: 3000,
       });
@@ -67,6 +76,7 @@ const LoginForm = () => {
             Forgot Password?
           </Link>
         </div>
+        {error && <div className="text-red-500 mb-4">{error}</div>}
         <Button label="Login" type="submit" />
         <div className="text-center mt-4">
           <span>Dont have an account? </span>
