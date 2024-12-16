@@ -212,3 +212,124 @@ export const getUserRecipes = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Failed to fetch user recipes' });
   }
 };
+
+export const getPendingRecipes = async (req: Request, res: Response) => {
+  try {
+    const pendingRecipes = await prismaClient.recipe.findMany({
+      where: {
+        approvalStatus: 'PENDING'
+      },
+      include: {
+        ingredients: true,
+        procedure: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+
+    const transformedPendingRecipes = pendingRecipes.map(recipe => ({
+      id: recipe.id,
+      title: recipe.title,
+      description: recipe.description,
+      servings: recipe.servings,
+      prepTime: recipe.prepTime,
+      category: recipe.category,
+      picture: recipe.picture,
+      requestDate: recipe.createdAt,
+      user: recipe.author.name,
+      userEmail: recipe.author.email,
+      ingredients: recipe.ingredients,
+      procedure: recipe.procedure
+    }));
+
+    res.json(transformedPendingRecipes);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch pending recipes' });
+  }
+};
+
+export const approveRecipe = async (req: Request, res: Response) => {
+  try {
+    const { recipeId } = req.params;
+
+    const updatedRecipe = await prismaClient.recipe.update({
+      where: { id: parseInt(recipeId) },
+      data: { 
+        approvalStatus: 'APPROVED' 
+      }
+    });
+
+    res.json(updatedRecipe);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to approve recipe' });
+  }
+};
+
+export const rejectRecipe = async (req: Request, res: Response) => {
+  try {
+    const { recipeId } = req.params;
+
+    const updatedRecipe = await prismaClient.recipe.update({
+      where: { id: parseInt(recipeId) },
+      data: { 
+        approvalStatus: 'DISAPPROVED' 
+      }
+    });
+
+    res.status(200).json(updatedRecipe);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to reject recipe' });
+  }
+};
+
+export const getPendingRecipe = async (req: Request, res: Response) => {
+  try {
+    const { recipeId } = req.params;
+
+    const recipe = await prismaClient.recipe.findUnique({
+      where: { 
+        id: parseInt(recipeId),
+        approvalStatus: 'PENDING'
+      },
+      include: {
+        ingredients: true,
+        procedure: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+
+    if (!recipe) {
+      return res.status(404).json({ message: 'Recipe not found or not pending' });
+    }
+
+    const transformedRecipe = {
+      id: recipe.id,
+      title: recipe.title,
+      description: recipe.description,
+      servings: recipe.servings,
+      prepTime: recipe.prepTime,
+      category: recipe.category,
+      picture: recipe.picture,
+      requestDate: recipe.createdAt,
+      user: recipe.author.name,
+      userEmail: recipe.author.email,
+      ingredients: recipe.ingredients,
+      procedure: recipe.procedure
+    };
+
+    res.json(transformedRecipe);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch pending recipe' });
+  }
+};

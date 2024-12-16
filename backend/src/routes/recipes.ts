@@ -1,7 +1,17 @@
 import { Router } from 'express';
-import { createRecipe, getRecipes, getUserRecipes, rateRecipe } from '../controllers/recipes';
+import { 
+  createRecipe, 
+  getRecipes, 
+  getUserRecipes, 
+  rateRecipe, 
+  getPendingRecipes,
+  getPendingRecipe,
+  approveRecipe,
+  rejectRecipe 
+} from '../controllers/recipes';
 import { errorHandler } from '../error-handler';
-import {authMiddleware} from '../middlewares/auth';
+import { authMiddleware } from '../middlewares/auth';
+import { adminMiddleware } from '../middlewares/auth';
 import upload from '../middlewares/multer-config';
 
 const recipeRoutes: Router = Router();
@@ -16,6 +26,30 @@ recipeRoutes.post(
   '/:recipeId/rate', 
   [authMiddleware], 
   errorHandler(rateRecipe)
+);
+
+recipeRoutes.get(
+  '/pending', 
+  [authMiddleware, adminMiddleware], 
+  errorHandler(getPendingRecipes)
+);
+
+recipeRoutes.get(
+  '/pending/:recipeId', 
+  [authMiddleware, adminMiddleware], 
+  errorHandler(getPendingRecipe)
+);
+
+recipeRoutes.patch(
+  '/:recipeId/approve', 
+  [authMiddleware, adminMiddleware], 
+  errorHandler(approveRecipe)
+);
+
+recipeRoutes.patch(
+  '/:recipeId/reject', 
+  [authMiddleware, adminMiddleware], 
+  errorHandler(rejectRecipe)
 );
 
 recipeRoutes.get('/', [authMiddleware], errorHandler(getRecipes));  // This should use the authMiddleware
