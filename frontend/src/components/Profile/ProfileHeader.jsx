@@ -1,11 +1,6 @@
-const ProfileHeader = ({ profilePicture, name, handle, bio, stats }) => {
+const ProfileHeader = ({ name, handle, bio, stats }) => {
   return (
     <div className="text-center mt-6">
-      <img
-        src={profilePicture}
-        alt={`${name}'s profile`}
-        className="w-28 h-28 rounded-full mx-auto"
-      />
       <h1 className="text-2xl font-bold mt-4">{name}</h1>
       <p className="text-gray-500">@{handle}</p>
       <p className="text-gray-700 mt-2">{bio}</p>
