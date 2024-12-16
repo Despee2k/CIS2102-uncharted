@@ -135,12 +135,6 @@ const Navbar = () => {
                 >
                   Add Recipe
                 </Link>
-                <Link
-                  to="/meal-plan"
-                  className="text-lg font-medium text-black hover:text-accent transition duration-300"
-                >
-                  Meal Plan
-                </Link>
               </>
             ) : (
               <>
@@ -220,4 +214,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
