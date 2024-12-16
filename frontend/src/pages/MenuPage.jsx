@@ -43,12 +43,14 @@ const MenuPage = () => {
     description: recipe.description,
     ingredients: recipe.ingredients.map(ing => ing.ingredient),
     procedure: recipe.procedure.map(proc => proc.step),
-    rating: 4.5,
+    rating: recipe.totalRating || 0,
+    totalRatings: recipe.totalRatings || 0,
     servings: recipe.servings,
-    readyIn: `${recipe.prepTime} mins`,
-    author: 'Chef',
-    datePosted: recipe.createdAt ? new Date(recipe.createdAt).toLocaleDateString() : 'Recently'
+    readyIn: recipe.prepTime,
+    authorName: recipe.author?.name || 'Unknown', // Handle null author name
+    datePosted: recipe.createdAt,
   }));
+  
 
   const filteredRecipes = transformedRecipes.filter(
     (recipe) => recipe.category === activeCategory
