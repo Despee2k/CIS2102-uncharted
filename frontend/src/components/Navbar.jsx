@@ -34,8 +34,8 @@ const Navbar = () => {
       draggable: true,
     });
 
-    // Redirect to home page
-    navigate('/');
+    // Redirect to login
+    navigate('/login');
   };
 
   const getFirstName = (name) => {
