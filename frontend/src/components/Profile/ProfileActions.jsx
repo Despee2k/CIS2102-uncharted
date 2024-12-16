@@ -8,11 +8,6 @@ const ProfileActions = () => {
           Edit Profile
         </button>
       </Link>
-      <Link to="/archive">
-        <button className="px-4 py-2 bg-accent text-white rounded hover:bg-accent-dark">
-          View Archive
-        </button>
-      </Link>
     </div>
   );
 };
