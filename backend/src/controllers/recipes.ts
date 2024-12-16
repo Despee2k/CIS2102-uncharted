@@ -333,3 +333,33 @@ export const getPendingRecipe = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Failed to fetch pending recipe' });
   }
 };
+
+export const searchRecipes = async (req: Request, res: Response) => {
+  try {
+    const { query } = req.query;
+
+    if (!query || typeof query !== 'string') {
+      return res.status(400).json({ message: 'Query parameter is required' });
+    }
+
+    const recipes = await prismaClient.recipe.findMany({
+      where: {
+        OR: [
+          { title: { contains: query.toLowerCase() } },
+          { description: { contains: query.toLowerCase() } },
+        ],
+        approvalStatus: 'APPROVED',
+      },
+      include: {
+        author: { select: { name: true } },
+        ingredients: true,
+        procedure: true,
+      },
+    });
+
+    res.json(recipes);
+  } catch (error) {
+    console.error('Error searching recipes:', error);
+    res.status(500).json({ message: 'Failed to search recipes' });
+  }
+};

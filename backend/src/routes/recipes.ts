@@ -7,7 +7,8 @@ import {
   getPendingRecipes,
   getPendingRecipe,
   approveRecipe,
-  rejectRecipe 
+  rejectRecipe, 
+  searchRecipes
 } from '../controllers/recipes';
 import { errorHandler } from '../error-handler';
 import { authMiddleware } from '../middlewares/auth';
@@ -59,5 +60,7 @@ recipeRoutes.get('/meal-plan', [authMiddleware], errorHandler(getMealPlan));
 recipeRoutes.get('/', [authMiddleware], errorHandler(getRecipes));  // This should use the authMiddleware
 
 recipeRoutes.get('/user', [authMiddleware], errorHandler(getUserRecipes));
+
+recipeRoutes.get('/search', [authMiddleware], errorHandler(searchRecipes));
 
 export default recipeRoutes;
