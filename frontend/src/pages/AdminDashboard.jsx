@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
+import axios from 'axios';
 import { MdDashboard } from "react-icons/md";
 import { FiCheckCircle, FiClock, FiXCircle } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Sidebar from "../components/Admin/Sidebar";
 
 const AdminDashboard = () => {
   const [user, setUser] = useState(null);
-  const [pendingData, setPendingData] = useState([]);
+  const [pendingRecipes, setPendingRecipes] = useState([]);
   const [analytics, setAnalytics] = useState({
     accepted: 0,
     pending: 0,
@@ -15,45 +16,54 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check user role from localStorage
     const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (!storedUser || storedUser.role !== "ADMIN") {
-      navigate("/login"); // Redirect to login if not an admin
+    const token = localStorage.getItem('token');
+
+    console.log("Stored User:", storedUser);
+    console.log("Stored User Token:", token);  // Log the token
+    
+    if (!storedUser || storedUser.role !== "ADMIN" || !token) {
+      navigate("/login"); 
     } else {
       setUser(storedUser);
+      fetchDashboardData(token);
     }
-
-    // Fetch pending requests and analytics data
-    const fetchDashboardData = async () => {
-      try {
-        // Replace with actual backend API endpoints
-        const response = await fetch("/api/dashboard");
-        const data = await response.json();
-
-        // Assuming data has the following shape:
-        // { pendingRequests: Array, accepted: Number, pending: Number, rejected: Number }
-        setPendingData(data.pendingRequests);
-        setAnalytics({
-          accepted: data.accepted,
-          pending: data.pending,
-          rejected: data.rejected,
-        });
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-      }
-    };
-
-    fetchDashboardData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
-  if (!user) return null; // Ensure the user is loaded before rendering the UI
+  const fetchDashboardData = async (token) => {
+    try {
+      // Fetch pending recipes
+      const recipesResponse = await axios.get('http://localhost:8088/api/recipes/pending', {
+        headers: { 
+          Authorization: token // Use the token directly
+        }
+      });
+      console.log("Pending Recipes Response:", recipesResponse.data);
+      setPendingRecipes(recipesResponse.data);
+  
+      // Calculate analytics
+      setAnalytics({
+        pending: recipesResponse.data.length,
+        accepted: 0,
+        rejected: 0
+      });
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      // Optionally handle unauthorized error
+      if (error.response && error.response.status === 401) {
+        navigate("/login");
+      }
+    }
+  };
+  
+ 
+  if (!user) return null;
 
   return (
     <div className="flex bg-[#F6F6F9] min-h-screen">
-      {/* Sidebar */}
       <Sidebar />
 
-      {/* Main Content */}
       <div className="flex-1 p-6">
         {/* Header Section */}
         <header className="flex items-center justify-between mb-6">
@@ -74,7 +84,6 @@ const AdminDashboard = () => {
         <section>
           <h2 className="text-xl font-bold mb-4">Analytics</h2>
           <div className="grid grid-cols-3 gap-6">
-            {/* Card 1 */}
             <div className="flex items-center p-6 bg-white rounded-lg shadow-lg hover:shadow-sm transition">
               <FiCheckCircle className="text-green-500 text-3xl mr-4" />
               <div>
@@ -82,7 +91,6 @@ const AdminDashboard = () => {
                 <h2 className="text-2xl font-bold">{analytics.accepted}</h2>
               </div>
             </div>
-            {/* Card 2 */}
             <div className="flex items-center p-6 bg-white rounded-lg shadow-lg hover:shadow-sm transition">
               <FiClock className="text-yellow-500 text-3xl mr-4" />
               <div>
@@ -90,7 +98,6 @@ const AdminDashboard = () => {
                 <h2 className="text-2xl font-bold">{analytics.pending}</h2>
               </div>
             </div>
-            {/* Card 3 */}
             <div className="flex items-center p-6 bg-white rounded-lg shadow-lg hover:shadow-sm transition">
               <FiXCircle className="text-red-500 text-3xl mr-4" />
               <div>
@@ -101,41 +108,40 @@ const AdminDashboard = () => {
           </div>
         </section>
 
-        {/* Recent Pending Requests */}
+        {/* Recent Pending Recipes */}
         <section className="mt-10">
-          <h2 className="text-xl font-bold mb-4">Recent Pendings</h2>
+          <h2 className="text-xl font-bold mb-4">Recent Pending Recipes</h2>
           <div className="w-full overflow-x-auto rounded-3xl bg-white px-5 pb-5 pt-3 shadow-[0_2rem_3rem_rgba(132,139,200,0.18)] duration-300 hover:shadow-none">
             <table className="min-w-full border-collapse">
               <thead>
                 <tr>
-                  <th className="px-6 py-3 text-center font-semibold">Pending ID</th>
+                  <th className="px-6 py-3 text-center font-semibold">Recipe ID</th>
+                  <th className="px-6 py-3 text-center font-semibold">Title</th>
                   <th className="px-6 py-3 text-center font-semibold">User</th>
                   <th className="px-6 py-3 text-center font-semibold">Request Date</th>
-                  <th className="px-6 py-3 text-center font-semibold">Requested Deadline</th>
-                  <th className="px-6 py-3 text-center font-semibold">Status</th>
                 </tr>
               </thead>
               <tbody>
-                {pendingData.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
+                {pendingRecipes.map((recipe) => (
+                  <tr key={recipe.id} className="hover:bg-gray-50">
                     <td className="px-6 py-3 text-center">
-                      <a className="text-accent underline" href={`/post-details/${item.id}`}>
-                        {item.id}
-                      </a>
+                      <Link 
+                        to={`/post-details/${recipe.id}`} 
+                        state={{ recipe }}
+                        className="text-accent underline"
+                      >
+                        {recipe.id}
+                      </Link>
                     </td>
-                    <td className="px-6 py-3 text-center">{item.user}</td>
-                    <td className="px-6 py-3 text-center">{item.requestDate}</td>
-                    <td className="px-6 py-3 text-center">{item.deadline}</td>
-                    <td className="px-6 py-3 text-center text-yellow-500">{item.status}</td>
+                    <td className="px-6 py-3 text-center">{recipe.title}</td>
+                    <td className="px-6 py-3 text-center">{recipe.user}</td>
+                    <td className="px-6 py-3 text-center">
+                      {new Date(recipe.requestDate).toLocaleDateString()}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
-          <div className="mt-4 text-center">
-            <a href="/pendingrequests" className="text-accent-500 underline hover:text-accent text-sm">
-              Show All
-            </a>
           </div>
         </section>
       </div>
