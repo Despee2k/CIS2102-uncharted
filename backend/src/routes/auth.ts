@@ -1,7 +1,7 @@
 import {Router} from 'express'
 import { login, me, signup, updateProfile } from '../controllers/auth'
 import { errorHandler } from '../error-handler'
-import authMiddleware from '../middlewares/auth'
+import {authMiddleware }from '../middlewares/auth'
 import { completeSurvey } from '../controllers/auth'
 
 const authRoutes: Router = Router()

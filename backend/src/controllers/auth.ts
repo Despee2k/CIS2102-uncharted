@@ -9,24 +9,28 @@ import { UnprocessableEntity } from "../exceptions/validation";
 import { SignUpSchema } from "../schema/users";
 import { NotFoundException } from "../exceptions/not-found";
 
-export const signup = async (req:Request, res:Response) => {
+export const signup = async (req: Request, res: Response) => {
     SignUpSchema.parse(req.body)
-    const {name, email, password, bio} = req.body;
+    const { name, email, password, bio, role } = req.body;
 
-    let user = await prismaClient.user.findFirst({where: {email: email}});
-    if(user){
+    let user = await prismaClient.user.findFirst({ where: { email: email } });
+    if (user) {
         throw new BadRequestsException("User already exists!", ErrorCode.USER_ALREADY_EXISTS);
     }
+
     user = await prismaClient.user.create({
-        data:{
+        data: {
             name,
             email,
             password: hashSync(password, 10),
-            bio: bio || null  // Optional bio
+            bio: bio || null,
+            role: role || "USER",  // Default to 'USER' role
         }
-    })
+    });
+
     res.json(user);
-}
+};
+
 
 export const login = async (req:Request, res:Response) => {
     const {email, password} = req.body;

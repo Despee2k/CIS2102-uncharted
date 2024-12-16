@@ -16,22 +16,27 @@ enum RecipeApprovalStatus {
   DISAPPROVED
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
 model User {
   id Int @id @default(autoincrement())
   name String
   email String @unique
   password String
   bio String?
+  role Role @default(USER)  // Added the role field with default as USER
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
   recipes Recipe[]
   ratings RecipeRating[]
-  
-  // Updated to store allergies as comma-separated string
+
   allergies String? @default("")
   completedSurvey Boolean @default(false)
-  
+
   @@map("users")
 }
 
