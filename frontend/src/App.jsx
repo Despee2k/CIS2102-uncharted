@@ -9,7 +9,6 @@ import EditProfilePage from './pages/EditProfilePage';
 import SurveyPage from './pages/SurveyPage';
 import MenuPage from './pages/MenuPage';
 import ProfilePage from './pages/ProfilePage';
-import ArchivePage from './pages/ArchivePage';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import PendingRequests from './pages/PendingRequests';
@@ -32,7 +31,6 @@ const App = () => {
         <Route path="/addrecipe" element={<AddRecipePage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/editprofile" element={<EditProfilePage />} />
-        <Route path="/archive" element={<ArchivePage />} />
         <Route path="/adminlogin" element={<AdminLogin />} />
         <Route path="/pendingrequests" element={<PendingRequests />} />
         <Route path="/post-details/:recipeId" element={<PendingDetails />} />

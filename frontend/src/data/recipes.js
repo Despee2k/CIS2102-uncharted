@@ -2,6 +2,7 @@ const recipes = [
     {
         id: 1,
         title: "Classic Spaghetti Carbonara",
+        category: "Dinner",
         image: "https://www.allrecipes.com/thmb/6UaBC03j_WXNoBfyOgW2hDMec2g=/0x512/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/245775-spaghetti-alla-carbonara-the-traditional-italian-recipe-DDMFS-4x3-879c32ee3cfb463582e3e6230e311029.jpg",
         ingredients: [
             "200g spaghetti",
@@ -29,10 +30,11 @@ const recipes = [
         datePosted: "2023-10-12",
         readyIn: "25 minutes",
         serving: "4 servings"
-        },
-        {
+    },
+    {
         id: 2,
         title: "Vegan Buddha Bowl",
+        category: "Lunch",
         image: "https://i0.wp.com/infusedliving.net/wp-content/uploads/2020/09/Thai-buddha-bowl.png?resize=1024%2C768&ssl=1",
         ingredients: [
             "1 cup quinoa",
@@ -62,10 +64,11 @@ const recipes = [
         datePosted: "2023-11-05",
         readyIn: "35 minutes",
         serving: "2 servings"
-        },
-        {
+    },
+    {
         id: 3,
         title: "Chocolate Lava Cake",
+        category: "Other",
         image: "https://www.allrecipes.com/thmb/9vlX3vmUX8K2NfdVG0UWDAhhKYw=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/7272577-67dd531d7b4a48dbb254dcdaafa658d4.jpg",
         ingredients: [
             "100g dark chocolate, chopped",
@@ -91,7 +94,97 @@ const recipes = [
         datePosted: "2023-09-18",
         readyIn: "30 minutes",
         serving: "4 servings"
-        }
-        ];
+    },
+    {
+        id: 4,
+        title: "Grilled Chicken Salad",
+        category: "Lunch",
+        image: "https://www.eatwell101.com/wp-content/uploads/2018/08/Grilled-Chicken-Salad-recipe-1.jpg",
+        ingredients: [
+            "200g chicken breast",
+            "Mixed salad greens",
+            "Cherry tomatoes, halved",
+            "Cucumber, sliced",
+            "1/4 cup feta cheese, crumbled",
+            "2 tbsp olive oil",
+            "Salt and black pepper to taste",
+            "1 tbsp balsamic vinegar"
+        ],
+        procedure: [
+            "Season the chicken breast with salt and black pepper.",
+            "Grill the chicken over medium heat until cooked through, about 5-7 minutes per side.",
+            "Slice the grilled chicken into strips.",
+            "In a large bowl, combine salad greens, cherry tomatoes, cucumber, and feta cheese.",
+            "Add the grilled chicken to the salad.",
+            "Drizzle with olive oil and balsamic vinegar before serving."
+        ],
+        description: "A light and healthy salad featuring grilled chicken and fresh vegetables, topped with feta cheese and a simple dressing.",
+        rating: 4.7,
+        author: "Chef John Doe",
+        datePosted: "2023-10-20",
+        readyIn: "20 minutes",
+        serving: "2 servings"
+    },
+    {
+        id: 5,
+        title: "Mushroom Risotto",
+        category: "Dinner",
+        image: "https://www.simplyrecipes.com/thmb/s7A4ppC52NpK3jzvA7bC2M7F1DU=/2000x1500/filters:no_upscale()/Simply-Recipes-Mushroom-Risotto-LEAD-04-ff3b7d4ef3ef4c8c9605d6a2d7cfb4a5.jpg",
+        ingredients: [
+            "1 cup Arborio rice",
+            "200g mushrooms, sliced",
+            "1 onion, chopped",
+            "2 cloves garlic, minced",
+            "4 cups vegetable broth",
+            "1/4 cup parmesan cheese, grated",
+            "2 tbsp olive oil",
+            "Salt and black pepper to taste"
+        ],
+        procedure: [
+            "Heat olive oil in a large pan over medium heat. Add onion and garlic, and sauté until soft.",
+            "Add mushrooms and cook until they release their moisture and become golden brown.",
+            "Stir in Arborio rice and cook for 2 minutes until lightly toasted.",
+            "Gradually add vegetable broth, one cup at a time, stirring constantly until the liquid is absorbed before adding more.",
+            "Continue until the rice is creamy and the grains are tender.",
+            "Stir in parmesan cheese, and season with salt and black pepper before serving."
+        ],
+        description: "A creamy and flavorful risotto made with Arborio rice and fresh mushrooms, perfect for a comforting meal.",
+        rating: 4.6,
+        author: "Chef Jane Smith",
+        datePosted: "2023-11-10",
+        readyIn: "40 minutes",
+        serving: "4 servings"
+    },
+    {
+        id: 6,
+        title: "Shrimp Tacos",
+        category: "Dinner",
+        image: "https://www.loveandlemons.com/wp-content/uploads/2021/03/shrimp-tacos.jpg",
+        ingredients: [
+            "200g shrimp, peeled and deveined",
+            "Corn tortillas",
+            "1 avocado, diced",
+            "1/4 cup red onion, diced",
+            "1/2 cup cabbage, shredded",
+            "1 lime, juiced",
+            "2 tbsp olive oil",
+            "Salt and black pepper to taste",
+            "1 tsp chili powder"
+        ],
+        procedure: [
+            "Season shrimp with chili powder, salt, and black pepper.",
+            "Heat olive oil in a pan over medium heat. Cook shrimp until pink and opaque, about 2-3 minutes per side.",
+            "Warm the corn tortillas in a separate pan or microwave.",
+            "Assemble the tacos with cooked shrimp, cabbage, diced avocado, and red onion.",
+            "Drizzle with lime juice before serving."
+        ],
+        description: "Flavorful shrimp tacos with avocado, cabbage, and a hint of lime, perfect for a quick and delicious meal.",
+        rating: 4.7,
+        author: "Chef Emily Brown",
+        datePosted: "2023-11-15",
+        readyIn: "20 minutes",
+        serving: "3 servings"
+    }
+];
 
 export default recipes;

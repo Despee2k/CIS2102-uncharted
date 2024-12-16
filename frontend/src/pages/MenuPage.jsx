@@ -11,7 +11,7 @@ const MenuPage = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const categories = ['Breakfast', 'Lunch', 'Dinner', 'Others'];
+  const categories = ['Breakfast', 'Lunch', 'Dinner', 'Other'];
   const [activeCategory, setActiveCategory] = useState('Breakfast');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
