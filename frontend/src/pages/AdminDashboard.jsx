@@ -1,18 +1,52 @@
+import { useEffect, useState } from "react";
 import { MdDashboard } from "react-icons/md";
 import { FiCheckCircle, FiClock, FiXCircle } from "react-icons/fi";
-
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Admin/Sidebar";
 
-const pendingData = [
-  { id: 20, user: "Alniño Past", requestDate: "2024-07-07", deadline: "2024-07-12", status: "Pending" },
-  { id: 19, user: "Ron Ramas", requestDate: "2024-07-04", deadline: "2024-07-08", status: "Pending" },
-  { id: 18, user: "Vin Sagarino", requestDate: "2024-07-02", deadline: "2024-07-11", status: "Pending" },
-  { id: 17, user: "Niko Pazo", requestDate: "2024-07-01", deadline: "2024-07-12", status: "Pending" },
-  { id: 16, user: "John Doe", requestDate: "2024-07-01", deadline: "2024-07-11", status: "Pending" },
-];
-
 const AdminDashboard = () => {
+  const [user, setUser] = useState(null);
+  const [pendingData, setPendingData] = useState([]);
+  const [analytics, setAnalytics] = useState({
+    accepted: 0,
+    pending: 0,
+    rejected: 0,
+  });
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    // Check user role from localStorage
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (!storedUser || storedUser.role !== "ADMIN") {
+      navigate("/login"); // Redirect to login if not an admin
+    } else {
+      setUser(storedUser);
+    }
+
+    // Fetch pending requests and analytics data
+    const fetchDashboardData = async () => {
+      try {
+        // Replace with actual backend API endpoints
+        const response = await fetch("/api/dashboard");
+        const data = await response.json();
+
+        // Assuming data has the following shape:
+        // { pendingRequests: Array, accepted: Number, pending: Number, rejected: Number }
+        setPendingData(data.pendingRequests);
+        setAnalytics({
+          accepted: data.accepted,
+          pending: data.pending,
+          rejected: data.rejected,
+        });
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      }
+    };
+
+    fetchDashboardData();
+  }, [navigate]);
+
+  if (!user) return null; // Ensure the user is loaded before rendering the UI
 
   return (
     <div className="flex bg-[#F6F6F9] min-h-screen">
@@ -29,15 +63,10 @@ const AdminDashboard = () => {
           <div className="flex items-center space-x-4">
             <div className="text-right">
               <p>
-                Hey, <strong>Alniño Past</strong>
+                Hey, <strong>{user.name}</strong>
               </p>
-              <p>Admin</p>
+              <strong>Admin</strong>
             </div>
-            <img
-              src="https://via.placeholder.com/40"
-              alt="Profile"
-              className="w-10 h-10 rounded-full border border-gray-300"
-            />
           </div>
         </header>
 
@@ -50,7 +79,7 @@ const AdminDashboard = () => {
               <FiCheckCircle className="text-green-500 text-3xl mr-4" />
               <div>
                 <p className="text-sm font-medium text-gray-500">Accepted</p>
-                <h2 className="text-2xl font-bold">2,657</h2>
+                <h2 className="text-2xl font-bold">{analytics.accepted}</h2>
               </div>
             </div>
             {/* Card 2 */}
@@ -58,7 +87,7 @@ const AdminDashboard = () => {
               <FiClock className="text-yellow-500 text-3xl mr-4" />
               <div>
                 <p className="text-sm font-medium text-gray-500">Pending</p>
-                <h2 className="text-2xl font-bold">20</h2>
+                <h2 className="text-2xl font-bold">{analytics.pending}</h2>
               </div>
             </div>
             {/* Card 3 */}
@@ -66,7 +95,7 @@ const AdminDashboard = () => {
               <FiXCircle className="text-red-500 text-3xl mr-4" />
               <div>
                 <p className="text-sm font-medium text-gray-500">Rejected</p>
-                <h2 className="text-2xl font-bold">594</h2>
+                <h2 className="text-2xl font-bold">{analytics.rejected}</h2>
               </div>
             </div>
           </div>
@@ -104,10 +133,7 @@ const AdminDashboard = () => {
             </table>
           </div>
           <div className="mt-4 text-center">
-            <a
-              href="/pendingrequests"
-              className="text-accent-500 underline hover:text-accent text-sm "
-            >
+            <a href="/pendingrequests" className="text-accent-500 underline hover:text-accent text-sm">
               Show All
             </a>
           </div>
@@ -118,4 +144,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-

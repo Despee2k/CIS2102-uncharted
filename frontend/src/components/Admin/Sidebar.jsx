@@ -12,7 +12,7 @@ const Sidebar = () => {
 
   const menuItems = useMemo(
     () => [
-      { name: "Dashboard", icon: <MdDashboard />, path: "/admindashboard" },
+      { name: "Dashboard", icon: <MdDashboard />, path: "/admin-dashboard" },
       { name: "Pending", icon: <FiClock />, path: "/pendingrequests" },
     ],
     []

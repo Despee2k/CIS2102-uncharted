@@ -16,27 +16,29 @@ const LoginForm = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(''); // Clear previous error messages
-
+  
     try {
       const response = await axios.post('http://localhost:8088/api/auth/login', {
         email,
         password
       });
-
+  
       // Save token to localStorage
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
-
+  
       toast.success('Login successful!', {
         position: "bottom-right",
         autoClose: 3000,
       });
-
+  
       // Check if the user needs to complete a survey
       if (response.data.needsSurvey) {
         navigate('/survey');
+      } else if (response.data.user.role === 'ADMIN') {
+        navigate('/admin-dashboard'); // Redirect to admin dashboard if user is admin
       } else {
-        navigate('/'); // Redirect to home page
+        navigate('/'); // Redirect to home page if user is regular
       }
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Login failed';
@@ -47,6 +49,7 @@ const LoginForm = () => {
       });
     }
   };
+  
 
   return (
     <FormContainer title="Log In">

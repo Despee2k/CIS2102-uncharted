@@ -33,8 +33,8 @@ const App = () => {
         <Route path="/archive" element={<ArchivePage />} />
         <Route path="/adminlogin" element={<AdminLogin />} />
         <Route path="/pendingrequests" element={<PendingRequests />} />
-        <Route path="/admindashboard" element={<AdminDashboard />} />
         <Route path="/post-details/:id" element={<PostDetails />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
       </Routes>
     </Router>
   );
