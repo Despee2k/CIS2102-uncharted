@@ -33,11 +33,25 @@ model User {
   
   recipes Recipe[]
   ratings RecipeRating[]
+  mealPlans MealPlan[]
 
   allergies String? @default("")
   completedSurvey Boolean @default(false)
 
   @@map("users")
+}
+
+model MealPlan {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  day       String   // e.g., "Monday", "Tuesday"
+  mealType  String   // "breakfast", "lunch", "dinner"
+  recipeId  Int
+  recipe    Recipe   @relation(fields: [recipeId], references: [id])
+  
+  @@unique([userId, day, mealType])
+  @@map("meal_plans")
 }
 
 model Recipe {
@@ -62,6 +76,7 @@ model Recipe {
   totalRating Float @default(0)
   totalRatings Int @default(0)
   ratings RecipeRating[]
+  mealPlans MealPlan[]
 
   @@map("recipes")
 }
