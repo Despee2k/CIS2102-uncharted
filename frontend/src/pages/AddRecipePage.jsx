@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import InputWithLabel from '../components/AddRecipe/InputWithLabel';
@@ -19,6 +20,7 @@ const AddRecipePage = () => {
 
   const [ingredients, setIngredients] = useState([]);
   const [procedure, setProcedure] = useState([]);
+  const navigate = useNavigate(); // Initialize the navigate function
 
   const onSubmit = async (data) => {
     if (ingredients.length === 0 || procedure.length === 0) {
@@ -31,7 +33,7 @@ const AddRecipePage = () => {
       const formData = new FormData();
       formData.append('title', data.title);
       formData.append('description', data.description);
-      formData.append('category', data.category);
+      formData.append('category', data.category); // category will now be the selected value
       formData.append('prepTime', data.prepTime);
       formData.append('servings', data.servings);
       
@@ -84,6 +86,9 @@ const AddRecipePage = () => {
       reset();
       setIngredients([]);
       setProcedure([]);
+
+      // Navigate to the /menu page
+      navigate('/menu'); // Navigate to MenuPage
 
     } catch (error) {
       console.error('Error adding recipe:', error);
@@ -143,15 +148,20 @@ const AddRecipePage = () => {
                 {errors.picture && <div className="text-red-500">{errors.picture.message}</div>}
               </div>
               
-              <InputWithLabel 
-                type="text"
-                name="Recipe Category"
-                placeholder="Category..."
-                register={register}
-                registerName="category"
-                errors={errors}
-                required
-              />
+              <div className="bg-gray flex flex-col w-2/3 mx-auto mb-5">
+                <label className="text-lg font-heading font-semibold mb-2">Recipe Category</label>
+                <select
+                  {...register('category', { required: 'Category is required' })}
+                  className="rounded-md outline outline-1 outline-gray-400 px-4 py-1"
+                >
+                  <option value="">Select a Category</option>
+                  <option value="Breakfast">Breakfast</option>
+                  <option value="Lunch">Lunch</option>
+                  <option value="Dinner">Dinner</option>
+                  <option value="Other">Other</option>
+                </select>
+                {errors.category && <div className="text-red-500">{errors.category.message}</div>}
+              </div>
               
               <InputWithLabel 
                 type="number"
